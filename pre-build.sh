@@ -20,7 +20,7 @@ sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "time.cloudflare.com" },/' trunk/
 #sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' trunk/user/shared/defaults.c
 
 # Включаем SSH по умолчанию
-#sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' trunk/user/shared/defaults.c
 
 # Логин и пароль от веб-интерфейса и SSH
 sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' trunk/user/shared/defaults.c
