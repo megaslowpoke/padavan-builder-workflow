@@ -4,10 +4,12 @@ cd padavan-ng || exit 2
 
 # --- Базовые настройки (заменяем строки целиком, не оглядываясь на DEF_ макросы) ---
 # Часовой пояс (MSK-3)
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "MSK-3" },/' trunk/user/shared/defaults.c
-sed -i 's/.*"time_zone".*/\t{ "time_zone", "MST-3MDT" },/' trunk/user/shared/defaults.c
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3" },/' trunk/user/shared/defaults.c - не работает
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "GMT+3" },/' trunk/user/shared/defaults.c
+#москва
+#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' trunk/user/shared/defaults.c
+#багдад
+#sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' trunk/user/shared/defaults.c
+#найроби
+sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_2" },/' trunk/user/shared/defaults.c
 
 # NTP-серверы
 sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "ntp.ix.ru" },/' trunk/user/shared/defaults.c
@@ -27,7 +29,7 @@ sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "time.cloudflare.com" },/' trunk/
 sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' trunk/user/shared/defaults.c
 
 # Логин и пароль от веб-интерфейса и SSH
-sed -i 's/.*"http_username".*/\t{ "http_username", "" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' trunk/user/shared/defaults.c
 sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' trunk/user/shared/defaults.c
 
 # --- Сеть и Wi-Fi ---
@@ -37,3 +39,11 @@ sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' trunk/user/shared/defaults.c
 # Региональные настройки Wi-Fi
 sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' trunk/user/shared/defaults.c
 sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' trunk/user/shared/defaults.c
+
+# Скачиваем свежий бандл от Mozilla/cURL
+wget -qO /tmp/cacert.pem https://curl.se/ca/cacert.pem
+# Находим, где именно в Padavan-ng лежит файл сертификатов, и заменяем его
+CERT_PATH=$(find trunk -name "ca-certificates.crt" -o -name "ca-bundle.crt" | head -n 1)
+if [ -n "$CERT_PATH" ]; then
+    cp -f /tmp/cacert.pem "$CERT_PATH"
+fi
