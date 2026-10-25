@@ -4,8 +4,8 @@ cd padavan-ng || exit 2
 
 # --- Базовые настройки (заменяем строки целиком, не оглядываясь на DEF_ макросы) ---
 # Часовой пояс (MSK-3)
-sed -i 's/.*"time_zone".*/\t{ "time_zone", "MSK-3" },/' trunk/user/shared/defaults.c
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "MST-3MDT" },/' trunk/user/shared/defaults.c
+#sed -i 's/.*"time_zone".*/\t{ "time_zone", "MSK-3" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"time_zone".*/\t{ "time_zone", "MST-3MDT" },/' trunk/user/shared/defaults.c
 #sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3" },/' trunk/user/shared/defaults.c - не работает
 #sed -i 's/.*"time_zone".*/\t{ "time_zone", "GMT+3" },/' trunk/user/shared/defaults.c
 
@@ -27,7 +27,7 @@ sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "time.cloudflare.com" },/' trunk/
 sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' trunk/user/shared/defaults.c
 
 # Логин и пароль от веб-интерфейса и SSH
-sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"http_username".*/\t{ "http_username", "" },/' trunk/user/shared/defaults.c
 sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' trunk/user/shared/defaults.c
 
 # --- Сеть и Wi-Fi ---
