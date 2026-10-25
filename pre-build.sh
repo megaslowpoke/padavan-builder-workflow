@@ -29,7 +29,7 @@ sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' trunk/user/shared/default
 # --- Сеть и Wi-Fi ---
 # Wi-Fi
 sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' trunk/user/shared/defaults.c
-sed -i 's/.*"wl_closed".*/\t{ "rt_closed", "1" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' trunk/user/shared/defaults.c
 # Региональные настройки Wi-Fi
 sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' trunk/user/shared/defaults.c
 sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' trunk/user/shared/defaults.c
