@@ -6,7 +6,8 @@ cd padavan-ng || exit 2
 # Часовой пояс (MSK-3)
 #sed -i 's/.*"time_zone".*/\t{ "time_zone", "MSK-3" },/' trunk/user/shared/defaults.c
 #sed -i 's/.*"time_zone".*/\t{ "time_zone", "MST-3MDT" },/' trunk/user/shared/defaults.c
-sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3" },/' trunk/user/shared/defaults.c
+#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3" },/' trunk/user/shared/defaults.c - не работает
+sed -i 's/.*"time_zone".*/\t{ "time_zone", "GMT+3" },/' trunk/user/shared/defaults.c
 
 # NTP-серверы
 sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "ntp.ix.ru" },/' trunk/user/shared/defaults.c
