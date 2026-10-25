@@ -6,6 +6,8 @@ cd padavan-ng || exit 2
 # Часовой пояс (MSK-3)
 #москва
 #sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' trunk/user/shared/defaults.c
+#минск
+#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' trunk/user/shared/defaults.c
 #багдад
 #sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' trunk/user/shared/defaults.c
 #найроби
