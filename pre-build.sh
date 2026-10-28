@@ -1,8 +1,13 @@
 #!/bin/bash
 # Переходим в каталог со скачанными исходниками
 cd padavan-ng || exit 2
-
-# --- Базовые настройки (заменяем строки целиком, не оглядываясь на DEF_ макросы) ---
+# Обновляем корневые сертификаты с помощью родного скрипта
+(
+    cd trunk/libs/libssl || exit 2
+    chmod +x ca-certificates_update.sh
+    ./ca-certificates_update.sh || exit 2
+)
+# --- Базовые настройки ---
 # Часовой пояс (MSK-3)
 #москва
 #sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' trunk/user/shared/defaults.c
@@ -45,11 +50,3 @@ sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' trunk/user/shared/defaults.c
 # Региональные настройки Wi-Fi
 sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' trunk/user/shared/defaults.c
 sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' trunk/user/shared/defaults.c
-
-# Скачиваем свежий бандл от Mozilla/cURL
-wget -qO /tmp/cacert.pem https://curl.se/ca/cacert.pem
-# Находим, где именно в Padavan-ng лежит файл сертификатов, и заменяем его
-CERT_PATH=$(find trunk -name "ca-certificates.crt" -o -name "ca-bundle.crt" | head -n 1)
-if [ -n "$CERT_PATH" ]; then
-    cp -f /tmp/cacert.pem "$CERT_PATH"
-fi
