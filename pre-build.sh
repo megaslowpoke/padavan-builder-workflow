@@ -37,6 +37,8 @@ sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' trunk/user/share
 sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' trunk/user/shared/defaults.c
 
 # --- Сеть и Wi-Fi ---
+sed -i 's/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG "192.168.1.10"/' trunk/user/shared/defaults.h
+sed -i 's/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END "192.168.1.199"/' trunk/user/shared/defaults.h
 # Wi-Fi
 sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' trunk/user/shared/defaults.c
 sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' trunk/user/shared/defaults.c
