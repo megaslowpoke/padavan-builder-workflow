@@ -50,3 +50,27 @@ sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' trunk/user/shared/defaults.c
 # Региональные настройки Wi-Fi
 sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' trunk/user/shared/defaults.c
 sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' trunk/user/shared/defaults.c
+
+# настройки dns
+# Комментируем дефолтные серверы в шаблоне Stubby и добавляем свои
+sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
+## Cloudflare\
+#  - address_data: 1.1.1.1\
+#    tls_auth_name: "cloudflare-dns.com"\
+#  - address_data: 1.0.0.1\
+#    tls_auth_name: "cloudflare-dns.com"\
+## Google\
+#  - address_data: 8.8.8.8\
+#    tls_auth_name: "dns.google"\
+#  - address_data: 8.8.4.4\
+#    tls_auth_name: "dns.google"\
+## CleanBrowsing Security\
+  - address_data: 185.228.168.9\
+    tls_auth_name: "security-filter-dns.cleanbrowsing.org"\
+  - address_data: 185.228.169.9\
+    tls_auth_name: "security-filter-dns.cleanbrowsing.org"\
+## DNS.SB (Stealth)\
+  - address_data: 45.11.45.11\
+    tls_auth_name: "dot.sb"\
+  - address_data: 185.222.222.222\
+    tls_auth_name: "dot.sb"' trunk/user/stubby/stubby_proxy.sh
