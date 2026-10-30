@@ -77,13 +77,13 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
 
 # надо облегчить прошивку, всё равно не влезает
 # Удаляем неиспользуемые иконки и скрипт USB-дисков
-rm -rf padavan-ng/trunk/user/www/n56u_ribbon_fixed/bootstrap/img/icons/aidisk
-> padavan-ng/trunk/user/www/n56u_ribbon_fixed/disk_functions.js
+rm -rf trunk/user/www/n56u_ribbon_fixed/bootstrap/img/icons/aidisk
+> trunk/user/www/n56u_ribbon_fixed/disk_functions.js
 
 # Убираем начальные пробелы/табы и пустые строки в .js, .css и .asp
-find padavan-ng/trunk/user/www/n56u_ribbon_fixed/ -type f \( -name "*.js" -o -name "*.css" -o -name "*.asp" \) \
+find trunk/user/www/n56u_ribbon_fixed/ -type f \( -name "*.js" -o -name "*.css" -o -name "*.asp" \) \
   -exec sed -i -e 's/^[ \t]*//' -e '/^$/d' {} +
 
 # Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
-> padavan-ng/trunk/user/www/n56u_ribbon_fixed/images/favicon.ico
-find padavan-ng/trunk/ -name "icon.ico" -exec truncate -s 0 {} +
+> trunk/user/www/n56u_ribbon_fixed/images/favicon.ico
+find trunk/ -name "icon.ico" -exec truncate -s 0 {} +
