@@ -74,3 +74,16 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
     tls_auth_name: "dot.sb"\
   - address_data: 185.222.222.222\
     tls_auth_name: "dot.sb"' trunk/user/stubby/stubby_proxy.sh
+
+# надо облегчить прошивку, всё равно не влезает
+# Удаляем неиспользуемые иконки и скрипт USB-дисков
+rm -rf padavan-ng/trunk/user/www/n56u_ribbon_fixed/bootstrap/img/icons/aidisk
+> padavan-ng/trunk/user/www/n56u_ribbon_fixed/disk_functions.js
+
+# Убираем начальные пробелы/табы и пустые строки в .js, .css и .asp
+find padavan-ng/trunk/user/www/n56u_ribbon_fixed/ -type f \( -name "*.js" -o -name "*.css" -o -name "*.asp" \) \
+  -exec sed -i -e 's/^[ \t]*//' -e '/^$/d' {} +
+
+# Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
+> padavan-ng/trunk/user/www/n56u_ribbon_fixed/images/favicon.ico
+find padavan-ng/trunk/ -name "icon.ico" -exec truncate -s 0 {} +
