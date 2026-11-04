@@ -126,13 +126,13 @@ truncate -s 0 "$WEB_DIR/qrcode.min.js"
 
 # Добавляем зачистку ненужных профилей terminfo на финальном этапе формирования romfs перед упаковкой в SquashFS
 # Оставляем только базовые профили linux, xterm и vt100
-# cat << 'EOF' >> "trunk/user/scripts/makedevlinks"
+cat << 'EOF' >> "trunk/user/scripts/makedevlinks"
 
-# rm -rf ./usr/share/terminfo/a \
-#        ./usr/share/terminfo/d \
-#        ./usr/share/terminfo/s \
-#        ./usr/share/terminfo/v/vt220 \
-#        ./usr/share/terminfo/x/xterm-color \
-#        ./usr/share/terminfo/x/xterm-r6 \
-#        ./usr/share/terminfo/x/xterm-xfree86
-# EOF
+rm -rf ./usr/share/terminfo/a \
+       ./usr/share/terminfo/d \
+       ./usr/share/terminfo/s \
+       ./usr/share/terminfo/v/vt220 \
+       ./usr/share/terminfo/x/xterm-color \
+       ./usr/share/terminfo/x/xterm-r6 \
+       ./usr/share/terminfo/x/xterm-xfree86
+EOF
