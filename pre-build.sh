@@ -86,9 +86,10 @@ WEB_DIR="trunk/user/www/n56u_ribbon_fixed"
 # Удаляем неиспользуемые иконки и скрипт USB-дисков
 truncate -s 0 "$WEB_DIR/disk_functions.js"
 rm -rf $WEB_DIR/bootstrap/img/icons/aidisk
-#if [ -d "$WEB_DIR/bootstrap/img/icons/aidisk" ]; then
+# или так
+# if [ -d "$WEB_DIR/bootstrap/img/icons/aidisk" ]; then
 #    find "$WEB_DIR/bootstrap/img/icons/aidisk" -type f -name "*.png" -exec truncate -s 0 {} +
-#fi
+# fi
 
 # Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
 truncate -s 0 "$WEB_DIR/images/favicon.ico"
@@ -115,7 +116,7 @@ sed -i '/value="1".*ISP KABiNET/d' "trunk/user/www/n56u_ribbon_fixed/Advanced_WA
 # как-то так надо скрывать в asp блок с переключателем infosvr
 sed -i '/<tr>/{
   $!N
-  /<tr>[[:space:]]*<th><#Adm_Svc_lltd#><\/th>/ s/<tr>/<tr style="display:none;">/
+  /<tr>[[:space:]]*<th><#Adm_Svc_adsc#><\/th>/ s/<tr>/<tr style="display:none;">/
   P; D
 }' "trunk/user/www/n56u_ribbon_fixed/Advanced_Services_Content.asp"
 
@@ -128,12 +129,12 @@ sed -i '/<tr>/{
 # не работает!
 # Добавляем зачистку ненужных профилей terminfo на финальном этапе формирования romfs перед упаковкой в SquashFS
 # Оставляем только базовые профили linux, xterm и vt100
-# cat << 'EOF' >> "trunk/user/scripts/makedevlinks"
-# rm -rf ./usr/share/terminfo/a \
-#        ./usr/share/terminfo/d \
-#        ./usr/share/terminfo/s \
-#        ./usr/share/terminfo/v/vt220 \
-#        ./usr/share/terminfo/x/xterm-color \
-#        ./usr/share/terminfo/x/xterm-r6 \
-#        ./usr/share/terminfo/x/xterm-xfree86
-# EOF
+cat << 'EOF' >> "trunk/user/scripts/makedevlinks"
+rm -rf ./usr/share/terminfo/a \
+       ./usr/share/terminfo/d \
+       ./usr/share/terminfo/s \
+       ./usr/share/terminfo/v/vt220 \
+       ./usr/share/terminfo/x/xterm-color \
+       ./usr/share/terminfo/x/xterm-r6 \
+       ./usr/share/terminfo/x/xterm-xfree86
+EOF
