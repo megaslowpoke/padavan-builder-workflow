@@ -80,9 +80,9 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
 rm -rf trunk/user/www/n56u_ribbon_fixed/bootstrap/img/icons/aidisk
 > trunk/user/www/n56u_ribbon_fixed/disk_functions.js
 
-# Убираем начальные пробелы/табы и пустые строки в .js, .css и .asp
-#find trunk/user/www/n56u_ribbon_fixed/ -type f \( -name "*.js" -o -name "*.css" -o -name "*.asp" \) \
-#  -exec sed -i -e 's/^[ \t]*//' -e '/^$/d' {} +
+# Убираем начальные пробелы/табы и пустые строки в .js, .css и .asp ≈23кб
+find trunk/user/www/n56u_ribbon_fixed/ -type f \( -name "*.js" -o -name "*.css" -o -name "*.asp" \) \
+  -exec sed -i -e 's/^[ \t]*//' -e '/^$/d' {} +
 
 # Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
 > trunk/user/www/n56u_ribbon_fixed/images/favicon.ico
