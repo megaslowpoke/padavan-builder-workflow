@@ -108,27 +108,27 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
 truncate -s 0 "$WEB_DIR/qrcode.min.js"
 
 # Исключаем сборку infosvr и lanauth из общего Makefile пользовательских утилит
-# sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "trunk/user/Makefile"
+sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "trunk/user/Makefile"
 # надо убрать упоминания о них в интерфейсе:
 # Удаляем пункт 'ISP KABiNET' из выпадающего списка авторизации WAN
-# sed -i '/value="1".*ISP KABiNET/d' "trunk/user/www/n56u_ribbon_fixed/Advanced_WAN_Content.asp"
+sed -i '/value="1".*ISP KABiNET/d' "trunk/user/www/n56u_ribbon_fixed/Advanced_WAN_Content.asp"
 # как-то так надо скрывать в asp блок с переключателем infosvr
-# sed -i '/<tr>/{
-#   $!N
-#   /<tr>[[:space:]]*<th><#Adm_Svc_lltd#><\/th>/ s/<tr>/<tr style="display:none;">/
-#   P; D
-# }' "trunk/user/www/n56u_ribbon_fixed/Advanced_Services_Content.asp"
+sed -i '/<tr>/{
+  $!N
+  /<tr>[[:space:]]*<th><#Adm_Svc_lltd#><\/th>/ s/<tr>/<tr style="display:none;">/
+  P; D
+}' "trunk/user/www/n56u_ribbon_fixed/Advanced_Services_Content.asp"
 
-Накатываем свои оптимизированные файлы поверх исходников
-if [ -d "overlay/trunk" ]; then
-    cp -rf overlay/trunk/* "trunk/"
-fi
+# не работает!
+# Накатываем свои оптимизированные файлы поверх исходников
+# if [ -d "overlay/trunk" ]; then
+#     cp -rf overlay/trunk/* "trunk/"
+# fi
 
 # не работает!
 # Добавляем зачистку ненужных профилей terminfo на финальном этапе формирования romfs перед упаковкой в SquashFS
 # Оставляем только базовые профили linux, xterm и vt100
 # cat << 'EOF' >> "trunk/user/scripts/makedevlinks"
-
 # rm -rf ./usr/share/terminfo/a \
 #        ./usr/share/terminfo/d \
 #        ./usr/share/terminfo/s \
