@@ -1,55 +1,60 @@
 #!/bin/bash
 # Переходим в каталог со скачанными исходниками
-cd padavan-ng || exit 2
+set -e
+TRUNK="padavan-ng/trunk"
+TRUNK_USER="padavan-ng/trunk/user"
+WEB_DIR="padavan-ng/trunk/user/www/n56u_ribbon_fixed"
+OVER_TRUNK="overlay/trunk"
+
 # Обновляем корневые сертификаты с помощью родного скрипта
 (
-    cd trunk/libs/libssl || exit 2
+    cd "$TRUNK/libs/libssl" || exit 2
     chmod +x ca-certificates_update.sh
     ./ca-certificates_update.sh || exit 2
 )
 # --- Базовые настройки ---
 # Часовой пояс (MSK-3)
 #москва
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' trunk/user/shared/defaults.c
+#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' $TRUNK_USER/shared/defaults.c
 #минск
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' trunk/user/shared/defaults.c
+#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' $TRUNK_USER/shared/defaults.c
 #багдад
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' trunk/user/shared/defaults.c
+#sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' $TRUNK_USER/shared/defaults.c
 #найроби
-sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_2" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_2" },/' $TRUNK_USER/shared/defaults.c
 
 # NTP-серверы
-#sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "time100.stupi.se" },/' trunk/user/shared/defaults.c
-#sed -i 's/.*"ntp_server1".*/\t{ "ntp_server1", "ntp1.vniiftri.ru" },/' trunk/user/shared/defaults.c
-#sed -i 's/.*"ntp_server2".*/\t{ "ntp_server2", "time.esa.int" },/' trunk/user/shared/defaults.c
-#sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "ojab.ru" },/' trunk/user/shared/defaults.c
-sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' trunk/user/shared/defaults.h
-sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' trunk/user/shared/defaults.h
-sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' trunk/user/shared/defaults.h
-sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time.cloudflare.com"/' trunk/user/shared/defaults.h
+#sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "time100.stupi.se" },/' $TRUNK_USER/shared/defaults.c
+#sed -i 's/.*"ntp_server1".*/\t{ "ntp_server1", "ntp1.vniiftri.ru" },/' $TRUNK_USER/shared/defaults.c
+#sed -i 's/.*"ntp_server2".*/\t{ "ntp_server2", "time.esa.int" },/' $TRUNK_USER/shared/defaults.c
+#sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "ojab.ru" },/' $TRUNK_USER/shared/defaults.c
+sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' $TRUNK_USER/shared/defaults.h
+sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' $TRUNK_USER/shared/defaults.h
+sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' $TRUNK_USER/shared/defaults.h
+sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time.cloudflare.com"/' $TRUNK_USER/shared/defaults.h
 
-sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' trunk/user/scripts/mtd_storage.sh
+sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' $TRUNK_USER/scripts/mtd_storage.sh
 
 # --- Авторизация и доступ ---
 # Язык веб-интерфейса
-#sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' trunk/user/shared/defaults.c
+#sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' $TRUNK_USER/shared/defaults.c
 
 # SSH по умолчанию
-#sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' trunk/user/shared/defaults.c
+#sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' $TRUNK_USER/shared/defaults.c
 
 # Логин и пароль от веб-интерфейса и SSH
-sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' trunk/user/shared/defaults.c
-sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' $TRUNK_USER/shared/defaults.c
+sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' $TRUNK_USER/shared/defaults.c
 
 # --- Сеть и Wi-Fi ---
-sed -i 's/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG "192.168.1.100"/' trunk/user/shared/defaults.h
-sed -i 's/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END "192.168.1.199"/' trunk/user/shared/defaults.h
+sed -i 's/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG "192.168.1.100"/' $TRUNK_USER/shared/defaults.h
+sed -i 's/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END "192.168.1.199"/' $TRUNK_USER/shared/defaults.h
 # Wi-Fi
-sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' trunk/user/shared/defaults.c
-sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' $TRUNK_USER/shared/defaults.c
+sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' $TRUNK_USER/shared/defaults.c
 # Региональные настройки Wi-Fi
-sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' trunk/user/shared/defaults.c
-sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' trunk/user/shared/defaults.c
+sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' $TRUNK_USER/shared/defaults.c
+sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' $TRUNK_USER/shared/defaults.c
 
 # настройки dns
 # Комментируем дефолтные серверы в шаблоне Stubby и добавляем свои
@@ -73,15 +78,13 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
   - address_data: 45.11.45.11\
     tls_auth_name: "dot.sb"\
   - address_data: 185.222.222.222\
-    tls_auth_name: "dot.sb"' trunk/user/stubby/stubby_proxy.sh
+    tls_auth_name: "dot.sb"' $TRUNK_USER/stubby/stubby_proxy.sh
 
 # надо облегчить прошивку, всё равно не влезает
-set -e
-WEB_DIR="trunk/user/www/n56u_ribbon_fixed"
 
 # Оставляем шапку и основные серверы в списке dnscrypt
 #sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
-#  trunk/user/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv
+#  $TRUNK_USER/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv
 
 # Удаляем неиспользуемые иконки и скрипт USB-дисков
 truncate -s 0 "$WEB_DIR/disk_functions.js"
@@ -93,7 +96,7 @@ rm -rf $WEB_DIR/bootstrap/img/icons/aidisk
 
 # Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
 truncate -s 0 "$WEB_DIR/images/favicon.ico"
-find "trunk/user" -name "icon.ico" -exec truncate -s 0 {} +
+find "$TRUNK_USER" -name "icon.ico" -exec truncate -s 0 {} +
 
 # Очищаем веб-интерфейс (.asp, .js, .css) от начальных пробелов/табов,
 # пустых строк и однострочных JS-комментариев
@@ -109,32 +112,45 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
 truncate -s 0 "$WEB_DIR/qrcode.min.js"
 
 # Исключаем сборку infosvr и lanauth из общего Makefile пользовательских утилит
-sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "trunk/user/Makefile"
+sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK_USER/Makefile"
 # надо убрать упоминания о них в интерфейсе:
 # Удаляем пункт 'ISP KABiNET' из выпадающего списка авторизации WAN
-sed -i '/value="1".*ISP KABiNET/d' "trunk/user/www/n56u_ribbon_fixed/Advanced_WAN_Content.asp"
+sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
 # как-то так надо скрывать в asp блок с переключателем infosvr
 sed -i '/<tr>/{
   $!N
   /<tr>[[:space:]]*<th><#Adm_Svc_adsc#><\/th>/ s/<tr>/<tr style="display:none;">/
   P; D
-}' "trunk/user/www/n56u_ribbon_fixed/Advanced_Services_Content.asp"
+}' "$WEB_DIR/Advanced_Services_Content.asp"
 
-# не работает!
 # Накатываем свои оптимизированные файлы поверх исходников
-# if [ -d "overlay/trunk" ]; then
-#     cp -rf overlay/trunk/* "trunk/"
-# fi
+if [ -d "$OVER_TRUNK" ]; then
+    cp -rf $OVER_TRUNK/* "$TRUNK/"
+fi
 
-# не работает!
-# Добавляем зачистку ненужных профилей terminfo на финальном этапе формирования romfs перед упаковкой в SquashFS
 # Оставляем только базовые профили linux, xterm и vt100
-cat << 'EOF' >> "trunk/user/scripts/makedevlinks"
+# 1. Удаляем возможный 'exit 0' в конце makedevlinks, чтобы наш код не оказался после выхода
+sed -i '/^[[:space:]]*exit[[:space:]]*0/d' "$TRUNK_USER/scripts/makedevlinks"
+
+# 2. Дописываем переход в корень romfs и зачистку terminfo
+cat << 'EOF' >> "$TRUNK_USER/scripts/makedevlinks"
+
+# Переходим в корень romfs (если мы внутри romfs/dev или в папке скриптов)
+if [ -d "../usr/share/terminfo" ]; then
+    cd ..
+elif [ -n "$1" ] && [ -d "$1/usr/share/terminfo" ]; then
+    cd "$1"
+fi
+
+echo "=== Cleaning terminfo in $(pwd) ==="
 rm -rf ./usr/share/terminfo/a \
        ./usr/share/terminfo/d \
        ./usr/share/terminfo/s \
        ./usr/share/terminfo/v/vt220 \
        ./usr/share/terminfo/x/xterm-color \
        ./usr/share/terminfo/x/xterm-r6 \
-       ./usr/share/terminfo/x/xterm-xfree86
+       ./usr/share/terminfo/x/xterm-xfree86 \
+       ./usr/share/terminfo/screen \
+       ./usr/share/terminfo/vt200 \
+       ./usr/share/terminfo/xterm-color
 EOF
