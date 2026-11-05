@@ -79,7 +79,7 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
   - address_data: 185.222.222.222\
     tls_auth_name: "dot.sb"' $TRUNK_USER/stubby/stubby_proxy.sh
 
-# надо облегчить прошивку, всё равно не влезает
+# надо облегчить прошивку, всё равно не влезает в дир300
 
 # Оставляем шапку и основные серверы в списке dnscrypt
 #sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
@@ -112,23 +112,6 @@ if [ -d "$OVER_TRUNK" ]; then
     cp -rf $OVER_TRUNK/* "$TRUNK/"
 fi
 
-# ---
-# Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
-# truncate -s 0 "$WEB_DIR/images/favicon.ico"
-# find "$TRUNK_USER" -name "icon.ico" -exec truncate -s 0 {} +
-
-# Удаляем неиспользуемые иконки и скрипт USB-дисков
-# truncate -s 0 "$WEB_DIR/disk_functions.js"
-# rm -rf $WEB_DIR/bootstrap/img/icons/aidisk
-# или так
-# if [ -d "$WEB_DIR/bootstrap/img/icons/aidisk" ]; then
-#    find "$WEB_DIR/bootstrap/img/icons/aidisk" -type f -name "*.png" -exec truncate -s 0 {} +
-# fi
-
-# Обнуляем генератор QR-кодов (19927 байт), если не нужно сканировать настройки с экрана
-# truncate -s 0 "$WEB_DIR/qrcode.min.js"
-# ---
-
 # Создаем скрипт финальной зачистки romfs перед упаковкой в SquashFS
 # 1. На всякий случай убираем 'exit 0' в конце strip-romfs.sh, если он там есть
 sed -i '/^[[:space:]]*exit[[:space:]]*0/d' "$TRUNK/tools/strip-romfs.sh"
@@ -148,6 +131,7 @@ rm -rfv "$ROMFSDIR/usr/share/terminfo/a" \
         "$ROMFSDIR/usr/share/terminfo/vt200" \
         "$ROMFSDIR/usr/share/terminfo/xterm-color" \
         "$ROMFSDIR/etc_ro/icon.ico" \
+        "$ROMFSDIR/etc_ro/icon.large.ico" \
         "$ROMFSDIR/www/images/favicon.ico" \
         "$ROMFSDIR/www/disk_functions.js" \
         "$ROMFSDIR/www/qrcode.min.js" \
