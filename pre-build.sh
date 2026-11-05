@@ -46,8 +46,9 @@ sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' "$TRUNK_USER/sha
 sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' "$TRUNK_USER/shared/defaults.c"
 
 # --- Сеть и Wi-Fi ---
-sed -i 's/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG "192.168.1.100"/' "$TRUNK_USER/shared/defaults.h"
-sed -i 's/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END "192.168.1.199"/' "$TRUNK_USER/shared/defaults.h"
+sed -i 's/#define DEF_LAN_ADDR.*/#define DEF_LAN_ADDR "192.168.10.1"/' "$TRUNK_USER/shared/defaults.h"
+sed -i 's/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG "192.168.10.100"/' "$TRUNK_USER/shared/defaults.h"
+sed -i 's/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END "192.168.10.199"/' "$TRUNK_USER/shared/defaults.h"
 
 # скрытый Wi-Fi
 sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' "$TRUNK_USER/shared/defaults.c"
@@ -151,8 +152,8 @@ rm -rfv "$ROMFSDIR/usr/share/terminfo/a" \
         "$ROMFSDIR/etc_ro/icon.large.ico" \
         "$ROMFSDIR/www/images/favicon.ico" \
         "$ROMFSDIR/www/qrcode.min.js" \
-        "$ROMFSDIR/www/disk_functions.js" \        
-        "$ROMFSDIR/www/bootstrap/img/icons/aidisk"        
+        "$ROMFSDIR/www/disk_functions.js" \
+        "$ROMFSDIR/www/bootstrap/img/icons/aidisk"
 EOF
 # тоже самое без удаления disk_functions и aidisk
 # cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
