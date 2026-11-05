@@ -116,7 +116,7 @@ fi
 # 1. На всякий случай убираем 'exit 0' в конце strip-romfs.sh, если он там есть
 sed -i '/^[[:space:]]*exit[[:space:]]*0/d' "$TRUNK/tools/strip-romfs.sh"
 
-# 2. Дописываем жесткую зачистку прямо в конец strip-romfs.sh
+# 2. Дописываем зачистку прямо в конец strip-romfs.sh: старые terminfo, иконки, рисовалка куаркода для вай-вая, жс для диска
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 
 echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
@@ -133,7 +133,53 @@ rm -rfv "$ROMFSDIR/usr/share/terminfo/a" \
         "$ROMFSDIR/etc_ro/icon.ico" \
         "$ROMFSDIR/etc_ro/icon.large.ico" \
         "$ROMFSDIR/www/images/favicon.ico" \
-        "$ROMFSDIR/www/disk_functions.js" \
         "$ROMFSDIR/www/qrcode.min.js" \
-        "$ROMFSDIR/www/bootstrap/img/icons/aidisk"
+        "$ROMFSDIR/www/disk_functions.js" \        
+        "$ROMFSDIR/www/bootstrap/img/icons/aidisk"\
+        
 EOF
+
+# Предзаполнение файла маршрутов VPN для новых роутеров
+cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
+
+# Заполняем список сетей VPN при первой загрузке роутера
+VPNC_LIST="/etc/storage/vpnc_remote_network.list"
+if [ ! -f "/etc/storage/.vpnc_inited" ]; then
+    cat << 'VPN_LIST_EOF' > "$VPNC_LIST"
+# Дефолтные маршруты для VPN-туннеля, формат: IP-адрес или подсеть
+# телеграм:
+104.21.37.127/32
+104.21.38.127/32
+104.21.39.127/32
+149.154.160.0/20
+162.159.137.232/32
+162.159.138.232/32
+172.67.132.10/32
+172.67.132.11/32
+172.67.132.12/32
+185.76.151.0/24
+188.114.96.3/32
+188.114.97.3/32
+199.232.208.194/32
+199.232.209.194/32
+3.173.21.63/32
+34.149.117.202/32
+5.28.192.0/21
+5.28.248.0/21
+8.6.112.0/32
+91.105.192.0/23
+91.108.12.0/22
+91.108.16.0/22
+91.108.20.0/22
+91.108.36.0/22
+91.108.4.0/22
+91.108.56.0/22
+91.108.8.0/22
+95.161.64.0/19
+95.161.64.0/20
+
+VPN_LIST_EOF
+    touch "/etc/storage/.vpnc_inited"
+    mtd_storage.sh save >/dev/null 2>&1
+fi
+VPN_EOF
