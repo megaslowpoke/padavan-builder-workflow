@@ -72,7 +72,7 @@ sed -i 's/.*"dhcp_proxy_dnssec".*/\t{ "dhcp_proxy_dnssec", "1" },/' "$TRUNK_USER
 sed -i 's/"ez_action_long", "0"/"ez_action_long", "8"/' "$TRUNK_USER/shared/defaults.c"
 
 # настройки dns
-sed -i 's/"dns_redirect", "0"/"dns_redirect", "1"/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/"redirect_all_dns", "0"/"redirect_all_dns", "1"/' "$TRUNK/user/shared/defaults.c"
 
 # Комментируем дефолтные серверы в шаблоне Stubby и добавляем свои
 sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
