@@ -74,6 +74,7 @@ sed -i 's/"ez_action_long", "0"/"ez_action_long", "8"/' "$TRUNK_USER/shared/defa
 
 # настройки dns
 sed -i 's/"redirect_all_dns", "0"/"redirect_all_dns", "1"/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/"dhcp_strict_order", "0"/"dhcp_strict_order", "1"/' "$TRUNK/user/shared/defaults.c"
 
 # Комментируем дефолтные серверы в шаблоне Stubby и добавляем свои
 sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
