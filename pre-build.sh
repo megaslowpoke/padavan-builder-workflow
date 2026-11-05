@@ -1,5 +1,4 @@
 #!/bin/bash
-# Переходим в каталог со скачанными исходниками
 set -e
 TRUNK="padavan-ng/trunk"
 TRUNK_USER="padavan-ng/trunk/user"
