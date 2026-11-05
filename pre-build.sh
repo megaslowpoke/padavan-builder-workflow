@@ -128,28 +128,4 @@ if [ -d "$OVER_TRUNK" ]; then
 fi
 
 # Оставляем только базовые профили linux, xterm и vt100
-# 1. Удаляем возможный 'exit 0' в конце makedevlinks, чтобы наш код не оказался после выхода
-sed -i '/^[[:space:]]*exit[[:space:]]*0/d' "$TRUNK_USER/scripts/makedevlinks"
-
-# 2. Дописываем переход в корень romfs и зачистку terminfo
-cat << 'EOF' >> "$TRUNK_USER/scripts/makedevlinks"
-
-# Переходим в корень romfs (если мы внутри romfs/dev или в папке скриптов)
-if [ -d "../usr/share/terminfo" ]; then
-    cd ..
-elif [ -n "$1" ] && [ -d "$1/usr/share/terminfo" ]; then
-    cd "$1"
-fi
-
-echo "=== Cleaning terminfo in $(pwd) ==="
-rm -rf ./usr/share/terminfo/a \
-       ./usr/share/terminfo/d \
-       ./usr/share/terminfo/s \
-       ./usr/share/terminfo/v/vt220 \
-       ./usr/share/terminfo/x/xterm-color \
-       ./usr/share/terminfo/x/xterm-r6 \
-       ./usr/share/terminfo/x/xterm-xfree86 \
-       ./usr/share/terminfo/screen \
-       ./usr/share/terminfo/vt200 \
-       ./usr/share/terminfo/xterm-color
-EOF
+sed -i '/^image:/a \	rm -rf $(ROMFSDIR)/usr/share/terminfo/a $(ROMFSDIR)/usr/share/terminfo/d $(ROMFSDIR)/usr/share/terminfo/s $(ROMFSDIR)/usr/share/terminfo/v/vt220 $(ROMFSDIR)/usr/share/terminfo/x/xterm-* $(ROMFSDIR)/usr/share/terminfo/screen $(ROMFSDIR)/usr/share/terminfo/vt200 $(ROMFSDIR)/usr/share/terminfo/xterm-color' "$TRUNK/Makefile"
