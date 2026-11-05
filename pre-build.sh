@@ -113,8 +113,9 @@ if [ -d "$OVER_TRUNK" ]; then
 fi
 
 # ---
-# Обнуляем генератор QR-кодов (19927 байт), если не нужно сканировать настройки с экрана
-# truncate -s 0 "$WEB_DIR/qrcode.min.js"
+# Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
+# truncate -s 0 "$WEB_DIR/images/favicon.ico"
+# find "$TRUNK_USER" -name "icon.ico" -exec truncate -s 0 {} +
 
 # Удаляем неиспользуемые иконки и скрипт USB-дисков
 # truncate -s 0 "$WEB_DIR/disk_functions.js"
@@ -124,41 +125,31 @@ fi
 #    find "$WEB_DIR/bootstrap/img/icons/aidisk" -type f -name "*.png" -exec truncate -s 0 {} +
 # fi
 
-# Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
-# truncate -s 0 "$WEB_DIR/images/favicon.ico"
-# find "$TRUNK_USER" -name "icon.ico" -exec truncate -s 0 {} +
+# Обнуляем генератор QR-кодов (19927 байт), если не нужно сканировать настройки с экрана
+# truncate -s 0 "$WEB_DIR/qrcode.min.js"
 # ---
 
 # Создаем скрипт финальной зачистки romfs перед упаковкой в SquashFS
-cat << 'EOF' > "$TRUNK/user/scripts/clean_romfs.sh"
-#!/bin/sh
-ROMFS="$1"
-[ -z "$ROMFS" ] && exit 1
+# 1. На всякий случай убираем 'exit 0' в конце strip-romfs.sh, если он там есть
+sed -i '/^[[:space:]]*exit[[:space:]]*0/d' "$TRUNK/tools/strip-romfs.sh"
 
-echo "=== Зачистка лишних файлов в $ROMFS ==="
+# 2. Дописываем жесткую зачистку прямо в конец strip-romfs.sh
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 
-# 1. Удаляем древние профили terminfo (оставляем только linux, vt100 и xterm)
-rm -rf "$ROMFS/usr/share/terminfo/a" \
-       "$ROMFS/usr/share/terminfo/d" \
-       "$ROMFS/usr/share/terminfo/s" \
-       "$ROMFS/usr/share/terminfo/v/vt220" \
-       "$ROMFS/usr/share/terminfo/x/xterm-color" \
-       "$ROMFS/usr/share/terminfo/x/xterm-r6" \
-       "$ROMFS/usr/share/terminfo/x/xterm-xfree86" \
-       "$ROMFS/usr/share/terminfo/screen" \
-       "$ROMFS/usr/share/terminfo/vt200" \
-       "$ROMFS/usr/share/terminfo/xterm-color"
-
-# 2. Удаляем неиспользуемые иконки и хвосты от USB/QR-кодов
-rm -rf "$ROMFS/etc_ro/icon.ico" \
-       "$ROMFS/www/images/favicon.ico" \
-       "$ROMFS/www/qrcode.min.js" \
-       "$ROMFS/www/disk_functions.js" \
-       "$ROMFS/www/bootstrap/img/icons/aidisk"
+echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
+rm -rfv "$ROMFSDIR/usr/share/terminfo/a" \
+        "$ROMFSDIR/usr/share/terminfo/d" \
+        "$ROMFSDIR/usr/share/terminfo/s" \
+        "$ROMFSDIR/usr/share/terminfo/v/vt220" \
+        "$ROMFSDIR/usr/share/terminfo/x/xterm-color" \
+        "$ROMFSDIR/usr/share/terminfo/x/xterm-r6" \
+        "$ROMFSDIR/usr/share/terminfo/x/xterm-xfree86" \
+        "$ROMFSDIR/usr/share/terminfo/screen" \
+        "$ROMFSDIR/usr/share/terminfo/vt200" \
+        "$ROMFSDIR/usr/share/terminfo/xterm-color" \
+        "$ROMFSDIR/etc_ro/icon.ico" \
+        "$ROMFSDIR/www/images/favicon.ico" \
+        "$ROMFSDIR/www/disk_functions.js" \
+        "$ROMFSDIR/www/qrcode.min.js" \
+        "$ROMFSDIR/www/bootstrap/img/icons/aidisk"
 EOF
-
-# Делаем скрипт исполняемым
-chmod +x "$TRUNK/user/scripts/clean_romfs.sh"
-
-# Подключаем его вызов в самое начало цели image: в главном trunk/Makefile
-sed -i '/^image:/a \	$(ROOTDIR)/user/scripts/clean_romfs.sh $(ROMFSDIR)' "$TRUNK/Makefile"
