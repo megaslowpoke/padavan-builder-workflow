@@ -48,12 +48,22 @@ sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' $TRUNK_USER/shared/defaul
 # --- Сеть и Wi-Fi ---
 sed -i 's/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG "192.168.1.100"/' $TRUNK_USER/shared/defaults.h
 sed -i 's/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END "192.168.1.199"/' $TRUNK_USER/shared/defaults.h
-# Wi-Fi
+
+# скрытый Wi-Fi
 sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' $TRUNK_USER/shared/defaults.c
 sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' $TRUNK_USER/shared/defaults.c
 # Региональные настройки Wi-Fi
 sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' $TRUNK_USER/shared/defaults.c
 sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' $TRUNK_USER/shared/defaults.c
+
+# ZAPRET
+sed -i 's/.*"zapret_enable".*/\t{ "zapret_enable", "1" },/' $TRUNK_USER/shared/defaults.c
+# DNSCRYPT
+sed -i 's/.*"dnscrypt_enable".*/\t{ "dnscrypt_enable", "1" },/' $TRUNK_USER/shared/defaults.c
+# VLMCSD
+sed -i 's/.*"vlmcsd_enable".*/\t{ "vlmcsd_enable", "1" },/' $TRUNK_USER/shared/defaults.c
+# watchdog_cpu
+sed -i 's/.*"watchdog_cpu".*/\t{ "watchdog_cpu", "1" },/' $TRUNK_USER/shared/defaults.c
 
 # настройки dns
 # Комментируем дефолтные серверы в шаблоне Stubby и добавляем свои
@@ -152,7 +162,7 @@ EOF
 #         "$ROMFSDIR/etc_ro/icon.ico" \
 #         "$ROMFSDIR/etc_ro/icon.large.ico" \
 #         "$ROMFSDIR/www/images/favicon.ico" \
-#         "$ROMFSDIR/www/qrcode.min.js" \
+#         "$ROMFSDIR/www/qrcode.min.js"
 # EOF
 
 
