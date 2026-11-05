@@ -85,18 +85,6 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
 #sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
 #  $TRUNK_USER/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv
 
-# Удаляем неиспользуемые иконки и скрипт USB-дисков
-truncate -s 0 "$WEB_DIR/disk_functions.js"
-rm -rf $WEB_DIR/bootstrap/img/icons/aidisk
-# или так
-# if [ -d "$WEB_DIR/bootstrap/img/icons/aidisk" ]; then
-#    find "$WEB_DIR/bootstrap/img/icons/aidisk" -type f -name "*.png" -exec truncate -s 0 {} +
-# fi
-
-# Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
-truncate -s 0 "$WEB_DIR/images/favicon.ico"
-find "$TRUNK_USER" -name "icon.ico" -exec truncate -s 0 {} +
-
 # Очищаем веб-интерфейс (.asp, .js, .css) от начальных пробелов/табов,
 # пустых строк и однострочных JS-комментариев
 find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
@@ -106,9 +94,6 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
         -e '/^[[:space:]]*\/\//d' \
         -e 's/[[:space:]]*$//' \
         -e '/^$/d' {} +
-
-# Обнуляем генератор QR-кодов (19927 байт), если не нужно сканировать настройки с экрана
-truncate -s 0 "$WEB_DIR/qrcode.min.js"
 
 # Исключаем сборку infosvr и lanauth из общего Makefile пользовательских утилит
 sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK_USER/Makefile"
@@ -127,5 +112,53 @@ if [ -d "$OVER_TRUNK" ]; then
     cp -rf $OVER_TRUNK/* "$TRUNK/"
 fi
 
-# Оставляем только базовые профили linux, xterm и vt100
-sed -i '/^image:/a \	rm -rf $(ROMFSDIR)/usr/share/terminfo/a $(ROMFSDIR)/usr/share/terminfo/d $(ROMFSDIR)/usr/share/terminfo/s $(ROMFSDIR)/usr/share/terminfo/v/vt220 $(ROMFSDIR)/usr/share/terminfo/x/xterm-* $(ROMFSDIR)/usr/share/terminfo/screen $(ROMFSDIR)/usr/share/terminfo/vt200 $(ROMFSDIR)/usr/share/terminfo/xterm-color' "$TRUNK/Makefile"
+# ---
+# Обнуляем генератор QR-кодов (19927 байт), если не нужно сканировать настройки с экрана
+# truncate -s 0 "$WEB_DIR/qrcode.min.js"
+
+# Удаляем неиспользуемые иконки и скрипт USB-дисков
+# truncate -s 0 "$WEB_DIR/disk_functions.js"
+# rm -rf $WEB_DIR/bootstrap/img/icons/aidisk
+# или так
+# if [ -d "$WEB_DIR/bootstrap/img/icons/aidisk" ]; then
+#    find "$WEB_DIR/bootstrap/img/icons/aidisk" -type f -name "*.png" -exec truncate -s 0 {} +
+# fi
+
+# Заменяем тяжелую иконку Windows LLTD и дубль фавиконки на пустые файлы
+# truncate -s 0 "$WEB_DIR/images/favicon.ico"
+# find "$TRUNK_USER" -name "icon.ico" -exec truncate -s 0 {} +
+# ---
+
+# Создаем скрипт финальной зачистки romfs перед упаковкой в SquashFS
+cat << 'EOF' > "$TRUNK/user/scripts/clean_romfs.sh"
+#!/bin/sh
+ROMFS="$1"
+[ -z "$ROMFS" ] && exit 1
+
+echo "=== Зачистка лишних файлов в $ROMFS ==="
+
+# 1. Удаляем древние профили terminfo (оставляем только linux, vt100 и xterm)
+rm -rf "$ROMFS/usr/share/terminfo/a" \
+       "$ROMFS/usr/share/terminfo/d" \
+       "$ROMFS/usr/share/terminfo/s" \
+       "$ROMFS/usr/share/terminfo/v/vt220" \
+       "$ROMFS/usr/share/terminfo/x/xterm-color" \
+       "$ROMFS/usr/share/terminfo/x/xterm-r6" \
+       "$ROMFS/usr/share/terminfo/x/xterm-xfree86" \
+       "$ROMFS/usr/share/terminfo/screen" \
+       "$ROMFS/usr/share/terminfo/vt200" \
+       "$ROMFS/usr/share/terminfo/xterm-color"
+
+# 2. Удаляем неиспользуемые иконки и хвосты от USB/QR-кодов
+rm -rf "$ROMFS/etc_ro/icon.ico" \
+       "$ROMFS/www/images/favicon.ico" \
+       "$ROMFS/www/qrcode.min.js" \
+       "$ROMFS/www/disk_functions.js" \
+       "$ROMFS/www/bootstrap/img/icons/aidisk"
+EOF
+
+# Делаем скрипт исполняемым
+chmod +x "$TRUNK/user/scripts/clean_romfs.sh"
+
+# Подключаем его вызов в самое начало цели image: в главном trunk/Makefile
+sed -i '/^image:/a \	$(ROOTDIR)/user/scripts/clean_romfs.sh $(ROMFSDIR)' "$TRUNK/Makefile"
