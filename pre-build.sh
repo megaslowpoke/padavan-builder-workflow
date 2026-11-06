@@ -31,10 +31,9 @@ sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' "$TRUN
 sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' "$TRUNK_USER/shared/defaults.h"
 sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' "$TRUNK_USER/shared/defaults.h"
 sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time.cloudflare.com"/' "$TRUNK_USER/shared/defaults.h"
-
+# дефолтные нтп при обновлении настроек в обход дот/дох
 sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' "$TRUNK_USER/scripts/mtd_storage.sh"
 
-# --- Авторизация и доступ ---
 # Язык веб-интерфейса
 #sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' "$TRUNK_USER/shared/defaults.c"
 
