@@ -132,22 +132,18 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
         -e 's/[[:space:]]*$//' \
         -e '/^$/d' {} +
 
-# Исключаем сборку infosvr и lanauth из общего Makefile пользовательских утилит
-sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK/user/Makefile"
+# Исключаем сборку infosvr/lanauth/ddns из общего Makefile пользовательских утилит
+# sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK_USER/Makefile"
+sed -i '/\<infosvr\>/d; /\<lanauth\>/d; /\<ddns_updated\>/d; /\<inadyn\>/d' "$TRUNK_USER/Makefile"
 # Надо убрать упоминания о них в интерфейсе:
 # Удаляем пункт 'ISP KABiNET' из выпадающего списка авторизации WAN
 sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
-# Как-то так надо скрывать в asp блок с переключателем infosvr
+# Как-то так надо скрывать в asp блок с infosvr
 sed -i '/<tr>/{
   $!N
   /<tr>[[:space:]]*<th><#Adm_Svc_adsc#><\/th>/ s/<tr>/<tr style="display:none;">/
   P; D
 }' "$WEB_DIR/Advanced_Services_Content.asp"
-
-# Накатываем свои оптимизированные файлы поверх исходников (без скрытых файлов, иначе: '"$OVER_TRUNK"/. "$TRUNK/".')
-if [ -d "$OVER_TRUNK" ]; then
-    cp -rf "$OVER_TRUNK"/* "$TRUNK/"
-fi
 
 # --- Создаем скрипт финальной очистки romfs перед упаковкой в SquashFS ---
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
@@ -181,6 +177,17 @@ cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 rm -rfv "$ROMFSDIR/www/disk_functions.js" \
         "$ROMFSDIR/www/bootstrap/img/icons/aidisk"
 EOF
+# DDNS
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+rm -rfv "$ROMFSDIR/usr/sbin/ddns_updated" \
+        "$ROMFSDIR/usr/sbin/inadyn" \
+        "$ROMFSDIR/www/Advanced_ASUSDDNS_Content.asp"
+EOF
+
+# Накатываем свои оптимизированные файлы (без скрытых файлов, иначе: '"$OVER_TRUNK"/. "$TRUNK/".')
+if [ -d "$OVER_TRUNK" ]; then
+    cp -rf "$OVER_TRUNK"/* "$TRUNK/"
+fi
 
 # --- Предзаполнение файла маршрутов VPN для новых роутеров ---
 cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
@@ -189,8 +196,8 @@ cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
 VPNC_LIST="/etc/storage/vpnc_remote_network.list"
 if [ ! -f "/etc/storage/.vpnc_inited" ]; then
     cat << 'VPN_LIST_EOF' > "$VPNC_LIST"
-# Адрес проверки IP через тоннель: https://checkip.dyndns.org/
-193.122.6.168/32
+# Адрес проверки IP через тоннель: https://ifconfig.me/ или только IP: https://ifconfig.me/ip
+34.160.111.145/32
 # Телеграм:
 VPN_EOF
 
