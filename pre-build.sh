@@ -158,9 +158,9 @@ sed -i '/action_script\.indexOf("hostname_check")/,/else if(page_modified == 1)/
 sed -i '/function validate_ddns_hostname/,/function validate_hostnamechar/{/function validate_hostnamechar/!d;}' "$WEB_DIR/general.js"
 sed -i '/current_page\.value == "Advanced_DDNS_Content\.asp"/,/action_mode\.value = "Update"/{/action_mode\.value = "Update"/!d;}' "$WEB_DIR/general.js"
 # Убираем из словарей почти всё про DDNS
-sed -i -E '/^(DDNS|LANHostConfig_x_DDNS([A-Za-z]|_alarm_([1-8]|1[0-4]|hostname|registered))|noDDNS=|neednotDDNS=|asusddns_inputhint=|menu5_3_6=)/d' "$TRUNK/user/www/dict"/*.dict
+sed -i -E '/^(DDNS|LANHostConfig_x_DDNS([A-Za-z]|_alarm_([1-8]|1[0-4]|hostname|registered))|noDDNS=|neednotDDNS=|asusddns_inputhint=|menu5_3_6=)/d' "$TRUNK/user/www/dict"/*.{dict,footer}
 # И про диски
-sed -i -E '/^(AiDisk|File_Pop_content_alert_desc|File_content_alert_desc|ALERT_OF_ERROR_|HowToShareby|Storage[A-Z]|HSDPAConfig_|Modem|Printer|OVPN_)/d' "$TRUNK/user/www/dict"/*.dict
+sed -i -E '/^(AiDisk|File_Pop_content_alert_desc|File_content_alert_desc|ALERT_OF_ERROR_|HowToShareby|Storage[A-Z]|HSDPAConfig_|Modem|Printer|OVPN_)/d' "$TRUNK/user/www/dict"/*.{dict,footer}
 
 # --- Создаем скрипт финальной очистки romfs перед упаковкой в SquashFS ---
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
