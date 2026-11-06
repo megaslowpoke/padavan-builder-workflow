@@ -170,17 +170,17 @@ rm -rfv "$ROMFSDIR/usr/share/terminfo/a" \
 EOF
 # ico
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-        "$ROMFSDIR/etc_ro/icon.ico" \
+rm -rfv "$ROMFSDIR/etc_ro/icon.ico" \
         "$ROMFSDIR/etc_ro/icon.large.ico" \
         "$ROMFSDIR/www/images/favicon.ico"
 EOF
 # qrcode
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-        "$ROMFSDIR/www/qrcode.min.js"
+rm -rfv "$ROMFSDIR/www/qrcode.min.js"
 EOF
 # disk
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-        "$ROMFSDIR/www/disk_functions.js" \
+rm -rfv "$ROMFSDIR/www/disk_functions.js" \
         "$ROMFSDIR/www/bootstrap/img/icons/aidisk"
 EOF
 
