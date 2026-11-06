@@ -154,6 +154,9 @@ sed -i '/^[[:space:]]*exit[[:space:]]*0/d' "$TRUNK/tools/strip-romfs.sh"
 # 2. Дописываем зачистку прямо в конец strip-romfs.sh: старые terminfo, иконки, рисовалка куаркода для вай-вая, жс для диска
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
+EOF
+# terminfo
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 rm -rfv "$ROMFSDIR/usr/share/terminfo/a" \
         "$ROMFSDIR/usr/share/terminfo/d" \
         "$ROMFSDIR/usr/share/terminfo/s" \
@@ -163,37 +166,26 @@ rm -rfv "$ROMFSDIR/usr/share/terminfo/a" \
         "$ROMFSDIR/usr/share/terminfo/x/xterm-xfree86" \
         "$ROMFSDIR/usr/share/terminfo/screen" \
         "$ROMFSDIR/usr/share/terminfo/vt200" \
-        "$ROMFSDIR/usr/share/terminfo/xterm-color" \
+        "$ROMFSDIR/usr/share/terminfo/xterm-color"
+EOF
+# ico
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
         "$ROMFSDIR/etc_ro/icon.ico" \
         "$ROMFSDIR/etc_ro/icon.large.ico" \
-        "$ROMFSDIR/www/images/favicon.ico" \
-        "$ROMFSDIR/www/qrcode.min.js" \
+        "$ROMFSDIR/www/images/favicon.ico"
+EOF
+# qrcode
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+        "$ROMFSDIR/www/qrcode.min.js"
+EOF
+# disk
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
         "$ROMFSDIR/www/disk_functions.js" \
         "$ROMFSDIR/www/bootstrap/img/icons/aidisk"
 EOF
-# тоже самое без удаления disk_functions и aidisk
-# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-# echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
-# rm -rfv "$ROMFSDIR/usr/share/terminfo/a" \
-#         "$ROMFSDIR/usr/share/terminfo/d" \
-#         "$ROMFSDIR/usr/share/terminfo/s" \
-#         "$ROMFSDIR/usr/share/terminfo/v/vt220" \
-#         "$ROMFSDIR/usr/share/terminfo/x/xterm-color" \
-#         "$ROMFSDIR/usr/share/terminfo/x/xterm-r6" \
-#         "$ROMFSDIR/usr/share/terminfo/x/xterm-xfree86" \
-#         "$ROMFSDIR/usr/share/terminfo/screen" \
-#         "$ROMFSDIR/usr/share/terminfo/vt200" \
-#         "$ROMFSDIR/usr/share/terminfo/xterm-color" \
-#         "$ROMFSDIR/etc_ro/icon.ico" \
-#         "$ROMFSDIR/etc_ro/icon.large.ico" \
-#         "$ROMFSDIR/www/images/favicon.ico" \
-#         "$ROMFSDIR/www/qrcode.min.js"
-# EOF
-
 
 # Предзаполнение файла маршрутов VPN для новых роутеров
 cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
-
 # Заполняем список сетей VPN при первой загрузке роутера
 VPNC_LIST="/etc/storage/vpnc_remote_network.list"
 if [ ! -f "/etc/storage/.vpnc_inited" ]; then
