@@ -189,7 +189,8 @@ cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
 VPNC_LIST="/etc/storage/vpnc_remote_network.list"
 if [ ! -f "/etc/storage/.vpnc_inited" ]; then
     cat << 'VPN_LIST_EOF' > "$VPNC_LIST"
-# Дефолтные маршруты для VPN-туннеля, формат: IP-адрес или подсеть
+# Дефолтные маршруты для VPN-туннеля, адрес быстрой проверки IP через тоннель: https://checkip.dyndns.org/
+193.122.6.168/32
 # телеграм:
 104.21.37.127/32
 104.21.38.127/32
