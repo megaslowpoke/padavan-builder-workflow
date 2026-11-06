@@ -89,6 +89,12 @@ sed -i 's/"ez_action_long", "0"/"ez_action_long", "8"/' "$TRUNK_USER/shared/defa
 sed -i 's/"redirect_all_dns", "0"/"redirect_all_dns", "1"/' "$TRUNK/user/shared/defaults.c"
 sed -i 's/"dhcp_strict_order", "0"/"dhcp_strict_order", "1"/' "$TRUNK/user/shared/defaults.c"
 
+# Сохранение настроек
+sed -i 's/.*"nvram_manual".*/\t{ "nvram_manual", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"rstats_enable".*/\t{ "rstats_enable", "0" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"rstats_stored".*/\t{ "rstats_stored", "0" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"stime_stored".*/\t{ "stime_stored", "1" },/' "$TRUNK_USER/shared/defaults.c"
+
 # Комментируем дефолтные серверы в шаблоне Stubby и добавляем свои
 sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
 ## Cloudflare\
