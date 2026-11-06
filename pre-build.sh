@@ -150,7 +150,7 @@ if [ -d "$OVER_TRUNK" ]; then
     cp -rf "$OVER_TRUNK"/* "$TRUNK/"
 fi
 
-# Создаем скрипт финальной очистки romfs перед упаковкой в SquashFS
+# --- Создаем скрипт финальной очистки romfs перед упаковкой в SquashFS ---
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
 EOF
@@ -183,7 +183,7 @@ rm -rfv "$ROMFSDIR/www/disk_functions.js" \
         "$ROMFSDIR/www/bootstrap/img/icons/aidisk"
 EOF
 
-# Предзаполнение файла маршрутов VPN для новых роутеров
+# --- Предзаполнение файла маршрутов VPN для новых роутеров ---
 cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
 
 # Заполняем список сетей VPN при первой загрузке роутера
@@ -192,7 +192,14 @@ if [ ! -f "/etc/storage/.vpnc_inited" ]; then
     cat << 'VPN_LIST_EOF' > "$VPNC_LIST"
 # Адрес проверки IP через тоннель: https://checkip.dyndns.org/
 193.122.6.168/32
-# Телеграм:
+# Телеграм (динамический или резервный список):
+VPN_EOF
+
+# Пытаемся скачать актуальный список сетей Telegram напрямую в файл autostart.sh
+echo "Скачиваем актуальный список CIDR Telegram..."
+if ! curl -sSfL "https://core.telegram.org/resources/cidr.txt" >> "$TRUNK/user/scripts/autostart.sh"; then
+    echo "Ошибка скачивания. Используем резервный список."
+    cat << 'FALLBACK_EOF' >> "$TRUNK/user/scripts/autostart.sh"
 104.21.37.127/32
 104.21.38.127/32
 104.21.39.127/32
@@ -220,8 +227,14 @@ if [ ! -f "/etc/storage/.vpnc_inited" ]; then
 91.108.4.0/22
 91.108.56.0/22
 91.108.8.0/22
-95.161.64.0/19
 95.161.64.0/20
+FALLBACK_EOF
+else
+    echo "" >> "$TRUNK/user/scripts/autostart.sh" # Добавляем перенос строки на всякий случай
+fi
+
+# Дописываем закрывающую часть скрипта
+cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
 VPN_LIST_EOF
     touch "/etc/storage/.vpnc_inited"
     mtd_storage.sh save >/dev/null 2>&1
