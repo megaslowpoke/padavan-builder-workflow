@@ -133,8 +133,8 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
         -e '/^$/d' {} +
 
 # Исключаем сборку infosvr/lanauth/ddns из общего Makefile пользовательских утилит
-# sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK_USER/Makefile"
-sed -i '/\<infosvr\>/d; /\<lanauth\>/d; /\<ddns_updated\>/d; /\<inadyn\>/d' "$TRUNK_USER/Makefile"
+# sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK/user/Makefile"
+sed -i '/\<infosvr\>/d; /\<lanauth\>/d; /\<ddns_updated\>/d; /\<inadyn\>/d' "$TRUNK/user/Makefile"
 # Надо убрать упоминания о них в интерфейсе:
 # Удаляем пункт 'ISP KABiNET' из выпадающего списка авторизации WAN
 sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
@@ -144,6 +144,23 @@ sed -i '/<tr>/{
   /<tr>[[:space:]]*<th><#Adm_Svc_adsc#><\/th>/ s/<tr>/<tr style="display:none;">/
   P; D
 }' "$WEB_DIR/Advanced_Services_Content.asp"
+
+# Исключаем сборку inadyn (вместе с infosvr и lanauth)
+sed -i '/\<infosvr\>/d; /\<lanauth\>/d; /\<inadyn\>/d' "$TRUNK/user/Makefile"
+# Убираем создание конфига inadyn.conf в /etc/storage при инициализации
+sed -i '/# create user inadyn\.conf/,/# create user hosts/{/# create user hosts/!d;}' "$TRUNK/user/scripts/mtd_storage.sh"
+# Убираем вкладку DDNS из меню WAN (state.js) и карты сети (internet.asp)
+sed -i '/Advanced_DDNS_Content\.asp/d' "$WEB_DIR/device-map/internet.asp"
+sed -i 's/, "Advanced_DDNS_Content\.asp"//' "$WEB_DIR/state.js"
+sed -i 's/, "<#menu5_3_6#>"//' "$WEB_DIR/state.js"
+# Вырезаем JS-обработчики DDNS из start_apply.htm и general.js
+sed -i '/action_script\.indexOf("hostname_check")/,/else if(page_modified == 1)/{/else if(page_modified == 1)/!d;}' "$WEB_DIR/start_apply.htm"
+sed -i '/function validate_ddns_hostname/,/function validate_hostnamechar/{/function validate_hostnamechar/!d;}' "$WEB_DIR/general.js"
+sed -i '/current_page\.value == "Advanced_DDNS_Content\.asp"/,/action_mode\.value = "Update"/{/action_mode\.value = "Update"/!d;}' "$WEB_DIR/general.js"
+# Убираем из словарей почти всё про DDNS
+sed -i -E '/^(DDNS|LANHostConfig_x_DDNS([A-Za-z]|_alarm_([1-8]|1[0-4]|hostname|registered))|noDDNS=|neednotDDNS=|asusddns_inputhint=|menu5_3_6=)/d' "$TRUNK/user/www/dict"/*.dict
+# И про диски
+sed -i -E '/^(AiDisk|File_Pop_content_alert_desc|File_content_alert_desc|ALERT_OF_ERROR_|HowToShareby|Storage[A-Z]|HSDPAConfig_|Modem|Printer|OVPN_)/d' "$TRUNK/user/www/dict"/*.dict
 
 # --- Создаем скрипт финальной очистки romfs перед упаковкой в SquashFS ---
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
@@ -179,9 +196,8 @@ rm -rfv "$ROMFSDIR/www/disk_functions.js" \
 EOF
 # DDNS
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-rm -rfv "$ROMFSDIR/usr/sbin/ddns_updated" \
-        "$ROMFSDIR/usr/sbin/inadyn" \
-        "$ROMFSDIR/www/Advanced_ASUSDDNS_Content.asp"
+rm -rfv "$ROMFSDIR/www/Advanced_DDNS_Content.asp" \
+        "$ROMFSDIR/sbin/ddns_updated"
 EOF
 
 # Накатываем свои оптимизированные файлы (без скрытых файлов, иначе: '"$OVER_TRUNK"/. "$TRUNK/".')
