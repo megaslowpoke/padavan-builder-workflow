@@ -52,19 +52,19 @@ sed -i "s/#define DEF_LAN_ADDR.*/#define DEF_LAN_ADDR \"$NEW_LAN.1\"/" "$TRUNK_U
 sed -i "s/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG \"$NEW_LAN.100\"/" "$TRUNK_USER/shared/defaults.h"
 sed -i "s/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END \"$NEW_LAN.199\"/" "$TRUNK_USER/shared/defaults.h"
 # Скрипт создания дефолтных пользовательских файлов (меняем примеры SOCKS, DHCP, Hosts)
-sed -i "s/192.168.1.1:9050/$NEW_LAN.1:9050/g" "$TRUNK_USER/scripts/mtd_storage.sh"
-sed -i "s/192.168.1.10,/$NEW_LAN.10,/g" "$TRUNK_USER/scripts/mtd_storage.sh"
-sed -i "s/192.168.1.100/$NEW_LAN.100/g" "$TRUNK_USER/scripts/mtd_storage.sh"
+sed -i "s/192\.168\.1\.1:9050/$NEW_LAN.1:9050/g" "$TRUNK_USER/scripts/mtd_storage.sh"
+sed -i "s/192\.168\.1\.10,/$NEW_LAN.10,/g" "$TRUNK_USER/scripts/mtd_storage.sh"
+sed -i "s/192\.168\.1\.100/$NEW_LAN.100/g" "$TRUNK_USER/scripts/mtd_storage.sh"
 # Серые HTML-подсказки в полях ввода LAN/AP
-sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_LAN_Content.asp"
-sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_APLAN_Content.asp"
+sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_LAN_Content.asp"
+sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_APLAN_Content.asp"
 # JS-функция сброса настроек и языковые подсказки
-sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_SettingBackup_Content.asp"
-sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/Restarting.asp"
-sed -i "s/192.168.1./$NEW_LAN./g" "$TRUNK_USER/www/dict"/*.{dict,footer}
+sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_SettingBackup_Content.asp"
+sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Restarting.asp"
+sed -i "s/192.168.1\./$NEW_LAN./g" "$TRUNK_USER/www/dict"/*.{dict,footer}
 # валидация данных
-sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/validator.js"
-sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/general.js"
+sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/validator.js"
+sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/general.js"
 
 # скрытый Wi-Fi
 sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' "$TRUNK_USER/shared/defaults.c"
