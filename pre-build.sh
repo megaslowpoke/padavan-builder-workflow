@@ -61,7 +61,7 @@ sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_APLAN_Content.asp"
 # JS-функция сброса настроек и языковые подсказки
 sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_SettingBackup_Content.asp"
 sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/Restarting.asp"
-sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR"/*.dict
+sed -i "s/192.168.1./$NEW_LAN./g" "$TRUNK_USER/www/dict"/*.{dict,footer}
 # валидация данных
 sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/validator.js"
 sed -i "s/192.168.1.1/$NEW_LAN.1/g" "$WEB_DIR/general.js"
