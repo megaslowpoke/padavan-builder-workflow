@@ -11,22 +11,21 @@ OVER_TRUNK="overlay/trunk"
     chmod +x ca-certificates_update.sh
     ./ca-certificates_update.sh || exit 2
 )
-# --- Базовые настройки ---
 # Часовой пояс (MSK-3)
-#москва
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' "$TRUNK_USER/shared/defaults.c"
-#минск
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' "$TRUNK_USER/shared/defaults.c"
-#багдад
-#sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' "$TRUNK_USER/shared/defaults.c"
-#найроби
+# Москва
+# sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' "$TRUNK_USER/shared/defaults.c"
+# Минск
+# sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' "$TRUNK_USER/shared/defaults.c"
+# Багдад
+# sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' "$TRUNK_USER/shared/defaults.c"
+# Найроби
 sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_2" },/' "$TRUNK_USER/shared/defaults.c"
 
 # NTP-серверы
-#sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "time100.stupi.se" },/' "$TRUNK_USER/shared/defaults.c"
-#sed -i 's/.*"ntp_server1".*/\t{ "ntp_server1", "ntp1.vniiftri.ru" },/' "$TRUNK_USER/shared/defaults.c"
-#sed -i 's/.*"ntp_server2".*/\t{ "ntp_server2", "time.esa.int" },/' "$TRUNK_USER/shared/defaults.c"
-#sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "ojab.ru" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "time100.stupi.se" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"ntp_server1".*/\t{ "ntp_server1", "ntp1.vniiftri.ru" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"ntp_server2".*/\t{ "ntp_server2", "time.esa.int" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "ojab.ru" },/' "$TRUNK_USER/shared/defaults.c"
 sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' "$TRUNK_USER/shared/defaults.h"
 sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' "$TRUNK_USER/shared/defaults.h"
 sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' "$TRUNK_USER/shared/defaults.h"
@@ -35,10 +34,10 @@ sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time.cloudflare.com
 sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' "$TRUNK_USER/scripts/mtd_storage.sh"
 
 # Язык веб-интерфейса
-#sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' "$TRUNK_USER/shared/defaults.c"
 
 # SSH по умолчанию
-#sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' "$TRUNK_USER/shared/defaults.c"
 
 # Логин и пароль от веб-интерфейса и SSH
 sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' "$TRUNK_USER/shared/defaults.c"
@@ -116,8 +115,8 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
 # надо облегчить прошивку, всё равно не влезает в 4мб у дир300
 
 # Оставляем шапку и основные серверы в списке dnscrypt
-#sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
-#  "$TRUNK_USER/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv"
+# sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
+# "$TRUNK_USER/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv"
 
 # Очищаем веб-интерфейс (.asp, .js, .css) от начальных пробелов/табов,
 # пустых строк и однострочных JS-комментариев
@@ -185,13 +184,14 @@ EOF
 
 # Предзаполнение файла маршрутов VPN для новых роутеров
 cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
+
 # Заполняем список сетей VPN при первой загрузке роутера
 VPNC_LIST="/etc/storage/vpnc_remote_network.list"
 if [ ! -f "/etc/storage/.vpnc_inited" ]; then
     cat << 'VPN_LIST_EOF' > "$VPNC_LIST"
-# Дефолтные маршруты для VPN-туннеля, адрес быстрой проверки IP через тоннель: https://checkip.dyndns.org/
+# Адрес быстрой проверки IP и вообще доступности тоннеля: https://checkip.dyndns.org/
 193.122.6.168/32
-# телеграм:
+# Телеграм:
 104.21.37.127/32
 104.21.38.127/32
 104.21.39.127/32
@@ -221,7 +221,6 @@ if [ ! -f "/etc/storage/.vpnc_inited" ]; then
 91.108.8.0/22
 95.161.64.0/19
 95.161.64.0/20
-
 VPN_LIST_EOF
     touch "/etc/storage/.vpnc_inited"
     mtd_storage.sh save >/dev/null 2>&1
