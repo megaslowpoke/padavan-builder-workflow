@@ -1,9 +1,8 @@
 #!/bin/bash
 set -e
 TRUNK="padavan-ng/trunk"
-TRUNK_USER="padavan-ng/trunk/user"
-WEB_DIR="padavan-ng/trunk/user/www/n56u_ribbon_fixed"
 OVER_TRUNK="overlay/trunk"
+WEB_DIR="padavan-ng/trunk/user/www/n56u_ribbon_fixed"
 
 # Обновляем корневые сертификаты с помощью родного скрипта
 (
@@ -13,87 +12,87 @@ OVER_TRUNK="overlay/trunk"
 )
 
 # Часовой пояс (MSK-3) Москва
-# sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' "$TRUNK/user/shared/defaults.c"
 # Минск
-# sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' "$TRUNK/user/shared/defaults.c"
 # Багдад
-# sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' "$TRUNK/user/shared/defaults.c"
 # Найроби
-sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_2" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_2" },/' "$TRUNK/user/shared/defaults.c"
 
 # NTP-серверы
-# sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "time100.stupi.se" },/' "$TRUNK_USER/shared/defaults.c"
-# sed -i 's/.*"ntp_server1".*/\t{ "ntp_server1", "ntp1.vniiftri.ru" },/' "$TRUNK_USER/shared/defaults.c"
-# sed -i 's/.*"ntp_server2".*/\t{ "ntp_server2", "time.esa.int" },/' "$TRUNK_USER/shared/defaults.c"
-# sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "ojab.ru" },/' "$TRUNK_USER/shared/defaults.c"
-sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' "$TRUNK_USER/shared/defaults.h"
-sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' "$TRUNK_USER/shared/defaults.h"
-sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' "$TRUNK_USER/shared/defaults.h"
-sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time.cloudflare.com"/' "$TRUNK_USER/shared/defaults.h"
+# sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "time100.stupi.se" },/' "$TRUNK/user/shared/defaults.c"
+# sed -i 's/.*"ntp_server1".*/\t{ "ntp_server1", "ntp1.vniiftri.ru" },/' "$TRUNK/user/shared/defaults.c"
+# sed -i 's/.*"ntp_server2".*/\t{ "ntp_server2", "time.esa.int" },/' "$TRUNK/user/shared/defaults.c"
+# sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "ojab.ru" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' "$TRUNK/user/shared/defaults.h"
+sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' "$TRUNK/user/shared/defaults.h"
+sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' "$TRUNK/user/shared/defaults.h"
+sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time.cloudflare.com"/' "$TRUNK/user/shared/defaults.h"
 # Дефолтные NTP при обновлении настроек в обход дот/дох
-sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' "$TRUNK_USER/scripts/mtd_storage.sh"
+sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' "$TRUNK/user/scripts/mtd_storage.sh"
 
 # Язык веб-интерфейса
-# sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' "$TRUNK/user/shared/defaults.c"
 
 # SSH по умолчанию
-# sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' "$TRUNK_USER/shared/defaults.c"
+# sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 
 # Логин и пароль от веб-интерфейса и SSH
-sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' "$TRUNK_USER/shared/defaults.c"
-sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' "$TRUNK/user/shared/defaults.c"
 
 # Сеть и Wi-Fi
 NEW_LAN="192.168.10"
 # DHCP
-sed -i "s/#define DEF_LAN_ADDR.*/#define DEF_LAN_ADDR \"$NEW_LAN.1\"/" "$TRUNK_USER/shared/defaults.h"
-sed -i "s/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG \"$NEW_LAN.100\"/" "$TRUNK_USER/shared/defaults.h"
-sed -i "s/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END \"$NEW_LAN.199\"/" "$TRUNK_USER/shared/defaults.h"
+sed -i "s/#define DEF_LAN_ADDR.*/#define DEF_LAN_ADDR \"$NEW_LAN.1\"/" "$TRUNK/user/shared/defaults.h"
+sed -i "s/#define DEF_LAN_DHCP_BEG.*/#define DEF_LAN_DHCP_BEG \"$NEW_LAN.100\"/" "$TRUNK/user/shared/defaults.h"
+sed -i "s/#define DEF_LAN_DHCP_END.*/#define DEF_LAN_DHCP_END \"$NEW_LAN.199\"/" "$TRUNK/user/shared/defaults.h"
 # Скрипт создания дефолтных пользовательских файлов (меняем примеры SOCKS, DHCP, Hosts)
-sed -i "s/192\.168\.1\.1:9050/$NEW_LAN.1:9050/g" "$TRUNK_USER/scripts/mtd_storage.sh"
-sed -i "s/192\.168\.1\.10,/$NEW_LAN.10,/g" "$TRUNK_USER/scripts/mtd_storage.sh"
-sed -i "s/192\.168\.1\.100/$NEW_LAN.100/g" "$TRUNK_USER/scripts/mtd_storage.sh"
+sed -i "s/192\.168\.1\.1:9050/$NEW_LAN.1:9050/g" "$TRUNK/user/scripts/mtd_storage.sh"
+sed -i "s/192\.168\.1\.10,/$NEW_LAN.10,/g" "$TRUNK/user/scripts/mtd_storage.sh"
+sed -i "s/192\.168\.1\.100/$NEW_LAN.100/g" "$TRUNK/user/scripts/mtd_storage.sh"
 # Серые HTML-подсказки в полях ввода LAN/AP
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_LAN_Content.asp"
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_APLAN_Content.asp"
 # JS-функция сброса настроек и языковые подсказки
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_SettingBackup_Content.asp"
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Restarting.asp"
-sed -i "s/192.168.1\./$NEW_LAN./g" "$TRUNK_USER/www/dict"/*.{dict,footer}
+sed -i "s/192.168.1\./$NEW_LAN./g" "$TRUNK/user/www/dict"/*.{dict,footer}
 # Валидация данных
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/validator.js"
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/general.js"
 
 # По дефолту Wi-Fi скрытый
-sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' "$TRUNK_USER/shared/defaults.c"
-sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' "$TRUNK/user/shared/defaults.c"
 # Региональные настройки Wi-Fi
-sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' "$TRUNK_USER/shared/defaults.c"
-sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' "$TRUNK/user/shared/defaults.c"
 
 # ZAPRET
-sed -i 's/.*"zapret_enable".*/\t{ "zapret_enable", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"zapret_enable".*/\t{ "zapret_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 # DNSCRYPT
-sed -i 's/.*"dnscrypt_enable".*/\t{ "dnscrypt_enable", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"dnscrypt_enable".*/\t{ "dnscrypt_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 # VLMCSD
-sed -i 's/.*"vlmcsd_enable".*/\t{ "vlmcsd_enable", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"vlmcsd_enable".*/\t{ "vlmcsd_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 # watchdog_cpu
-sed -i 's/.*"watchdog_cpu".*/\t{ "watchdog_cpu", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"watchdog_cpu".*/\t{ "watchdog_cpu", "1" },/' "$TRUNK/user/shared/defaults.c"
 # dhcp_stop_dns_rebind
-sed -i 's/.*"dhcp_stop_dns_rebind".*/\t{ "dhcp_stop_dns_rebind", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"dhcp_stop_dns_rebind".*/\t{ "dhcp_stop_dns_rebind", "1" },/' "$TRUNK/user/shared/defaults.c"
 # dhcp_proxy_dnssec
-sed -i 's/.*"dhcp_proxy_dnssec".*/\t{ "dhcp_proxy_dnssec", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"dhcp_proxy_dnssec".*/\t{ "dhcp_proxy_dnssec", "1" },/' "$TRUNK/user/shared/defaults.c"
 # ez_action_long, выключение ролтона по долгому нажатию на WPS
-sed -i 's/"ez_action_long", "0"/"ez_action_long", "8"/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/"ez_action_long", "0"/"ez_action_long", "8"/' "$TRUNK/user/shared/defaults.c"
 # DNS
 sed -i 's/"redirect_all_dns", "0"/"redirect_all_dns", "1"/' "$TRUNK/user/shared/defaults.c"
 sed -i 's/"dhcp_strict_order", "0"/"dhcp_strict_order", "1"/' "$TRUNK/user/shared/defaults.c"
 
 # Сохранение настроек
-sed -i 's/.*"nvram_manual".*/\t{ "nvram_manual", "1" },/' "$TRUNK_USER/shared/defaults.c"
-sed -i 's/.*"rstats_enable".*/\t{ "rstats_enable", "0" },/' "$TRUNK_USER/shared/defaults.c"
-sed -i 's/.*"rstats_stored".*/\t{ "rstats_stored", "0" },/' "$TRUNK_USER/shared/defaults.c"
-sed -i 's/.*"stime_stored".*/\t{ "stime_stored", "1" },/' "$TRUNK_USER/shared/defaults.c"
+sed -i 's/.*"nvram_manual".*/\t{ "nvram_manual", "1" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/.*"rstats_enable".*/\t{ "rstats_enable", "0" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/.*"rstats_stored".*/\t{ "rstats_stored", "0" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/.*"stime_stored".*/\t{ "stime_stored", "1" },/' "$TRUNK/user/shared/defaults.c"
 
 # Комментируем дефолтные серверы в шаблоне Stubby и добавляем свои
 sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
@@ -116,13 +115,13 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
   - address_data: 45.11.45.11\
     tls_auth_name: "dot.sb"\
   - address_data: 185.222.222.222\
-    tls_auth_name: "dot.sb"' "$TRUNK_USER/stubby/stubby_proxy.sh"
+    tls_auth_name: "dot.sb"' "$TRUNK/user/stubby/stubby_proxy.sh"
 
 # Надо облегчить прошивку, всё равно не влезает в 4мб дир300
 
 # Оставляем шапку и основные серверы в списке dnscrypt
 # sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
-# "$TRUNK_USER/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv"
+# "$TRUNK/user/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv"
 
 # Очищаем веб-интерфейс (.asp, .js, .css) от начальных пробелов/табов, пустых строк и однострочных JS-комментариев
 find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
@@ -134,7 +133,7 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
         -e '/^$/d' {} +
 
 # Исключаем сборку infosvr и lanauth из общего Makefile пользовательских утилит
-sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK_USER/Makefile"
+sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK/user/Makefile"
 # Надо убрать упоминания о них в интерфейсе:
 # Удаляем пункт 'ISP KABiNET' из выпадающего списка авторизации WAN
 sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
