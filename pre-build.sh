@@ -132,21 +132,10 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
         -e 's/[[:space:]]*$//' \
         -e '/^$/d' {} +
 
-# Исключаем сборку infosvr/lanauth/ddns из общего Makefile пользовательских утилит
-# sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK/user/Makefile"
-sed -i '/\<infosvr\>/d; /\<lanauth\>/d; /\<ddns_updated\>/d; /\<inadyn\>/d' "$TRUNK/user/Makefile"
-# Надо убрать упоминания о них в интерфейсе:
-# Удаляем пункт 'ISP KABiNET' из выпадающего списка авторизации WAN
-sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
-# Как-то так надо скрывать в asp блок с infosvr
-sed -i '/<tr>/{
-  $!N
-  /<tr>[[:space:]]*<th><#Adm_Svc_adsc#><\/th>/ s/<tr>/<tr style="display:none;">/
-  P; D
-}' "$WEB_DIR/Advanced_Services_Content.asp"
-
-# Исключаем сборку inadyn (вместе с infosvr и lanauth)
+# Исключаем сборку infosvr/lanauth/ddns из общего Makefile
 sed -i '/\<infosvr\>/d; /\<lanauth\>/d; /\<inadyn\>/d' "$TRUNK/user/Makefile"
+# Исключаем ddns из rc/Makefile
+sed -i '/\<ddns_updated\; /\<start_ddns\>/d' "$TRUNK/user/rc/Makefile"
 # Убираем создание конфига inadyn.conf в /etc/storage при инициализации
 sed -i '/# create user inadyn\.conf/,/# create user hosts/{/# create user hosts/!d;}' "$TRUNK/user/scripts/mtd_storage.sh"
 # Убираем вкладку DDNS из меню WAN (state.js) и карты сети (internet.asp)
@@ -161,6 +150,14 @@ sed -i '/current_page\.value == "Advanced_DDNS_Content\.asp"/,/action_mode\.valu
 sed -i -E '/^(DDNS|LANHostConfig_x_DDNS([A-Za-z]|_alarm_([1-8]|1[0-4]|hostname|registered))|noDDNS=|neednotDDNS=|asusddns_inputhint=|menu5_3_6=)/d' "$TRUNK/user/www/dict"/*.{dict,footer}
 # И про диски
 sed -i -E '/^(AiDisk|File_Pop_content_alert_desc|File_content_alert_desc|ALERT_OF_ERROR_|HowToShareby|Storage[A-Z]|HSDPAConfig_|Modem|Printer|OVPN_)/d' "$TRUNK/user/www/dict"/*.{dict,footer}
+# Надо убрать 'ISP KABiNET' из выпадающего списка авторизации WAN
+sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
+# Как-то так надо скрывать в asp блок с infosvr
+sed -i '/<tr>/{
+  $!N
+  /<tr>[[:space:]]*<th><#Adm_Svc_adsc#><\/th>/ s/<tr>/<tr style="display:none;">/
+  P; D
+}' "$WEB_DIR/Advanced_Services_Content.asp"
 
 # --- Создаем скрипт финальной очистки romfs перед упаковкой в SquashFS ---
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
