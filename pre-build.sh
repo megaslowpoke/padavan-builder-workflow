@@ -11,8 +11,8 @@ OVER_TRUNK="overlay/trunk"
     chmod +x ca-certificates_update.sh
     ./ca-certificates_update.sh || exit 2
 )
-# Часовой пояс (MSK-3)
-# Москва
+
+# Часовой пояс (MSK-3) Москва
 # sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' "$TRUNK_USER/shared/defaults.c"
 # Минск
 # sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' "$TRUNK_USER/shared/defaults.c"
@@ -30,7 +30,7 @@ sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' "$TRUN
 sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' "$TRUNK_USER/shared/defaults.h"
 sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' "$TRUNK_USER/shared/defaults.h"
 sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time.cloudflare.com"/' "$TRUNK_USER/shared/defaults.h"
-# дефолтные нтп при обновлении настроек в обход дот/дох
+# Дефолтные NTP при обновлении настроек в обход дот/дох
 sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' "$TRUNK_USER/scripts/mtd_storage.sh"
 
 # Язык веб-интерфейса
@@ -43,7 +43,7 @@ sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1
 sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' "$TRUNK_USER/shared/defaults.c"
 sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' "$TRUNK_USER/shared/defaults.c"
 
-# --- Сеть и Wi-Fi ---
+# Сеть и Wi-Fi
 NEW_LAN="192.168.10"
 # DHCP
 sed -i "s/#define DEF_LAN_ADDR.*/#define DEF_LAN_ADDR \"$NEW_LAN.1\"/" "$TRUNK_USER/shared/defaults.h"
@@ -60,11 +60,11 @@ sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_APLAN_Content.asp"
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Advanced_SettingBackup_Content.asp"
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/Restarting.asp"
 sed -i "s/192.168.1\./$NEW_LAN./g" "$TRUNK_USER/www/dict"/*.{dict,footer}
-# валидация данных
+# Валидация данных
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/validator.js"
 sed -i "s/192\.168\.1\.1/$NEW_LAN.1/g" "$WEB_DIR/general.js"
 
-# скрытый Wi-Fi
+# По дефолту Wi-Fi скрытый
 sed -i 's/.*"rt_closed".*/\t{ "rt_closed", "1" },/' "$TRUNK_USER/shared/defaults.c"
 sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' "$TRUNK_USER/shared/defaults.c"
 # Региональные настройки Wi-Fi
@@ -112,14 +112,13 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
   - address_data: 185.222.222.222\
     tls_auth_name: "dot.sb"' "$TRUNK_USER/stubby/stubby_proxy.sh"
 
-# надо облегчить прошивку, всё равно не влезает в 4мб у дир300
+# Надо облегчить прошивку, всё равно не влезает в 4мб дир300
 
 # Оставляем шапку и основные серверы в списке dnscrypt
 # sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
 # "$TRUNK_USER/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv"
 
-# Очищаем веб-интерфейс (.asp, .js, .css) от начальных пробелов/табов,
-# пустых строк и однострочных JS-комментариев
+# Очищаем веб-интерфейс (.asp, .js, .css) от начальных пробелов/табов, пустых строк и однострочных JS-комментариев
 find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
     ! -name "*.min.js" ! -name "*.min.css" \
     -exec sed -i \
@@ -130,10 +129,10 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
 
 # Исключаем сборку infosvr и lanauth из общего Makefile пользовательских утилит
 sed -i '/\<infosvr\>/d; /\<lanauth\>/d' "$TRUNK_USER/Makefile"
-# надо убрать упоминания о них в интерфейсе:
+# Надо убрать упоминания о них в интерфейсе:
 # Удаляем пункт 'ISP KABiNET' из выпадающего списка авторизации WAN
 sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
-# как-то так надо скрывать в asp блок с переключателем infosvr
+# Как-то так надо скрывать в asp блок с переключателем infosvr
 sed -i '/<tr>/{
   $!N
   /<tr>[[:space:]]*<th><#Adm_Svc_adsc#><\/th>/ s/<tr>/<tr style="display:none;">/
@@ -145,11 +144,7 @@ if [ -d "$OVER_TRUNK" ]; then
     cp -rf "$OVER_TRUNK"/* "$TRUNK/"
 fi
 
-# Создаем скрипт финальной зачистки romfs перед упаковкой в SquashFS
-# 1. На всякий случай убираем 'exit 0' в конце strip-romfs.sh, если он там есть
-sed -i '/^[[:space:]]*exit[[:space:]]*0/d' "$TRUNK/tools/strip-romfs.sh"
-
-# 2. Дописываем зачистку прямо в конец strip-romfs.sh: старые terminfo, иконки, рисовалка куаркода для вай-вая, жс для диска
+# Создаем скрипт финальной очистки romfs перед упаковкой в SquashFS
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
 EOF
@@ -189,7 +184,7 @@ cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
 VPNC_LIST="/etc/storage/vpnc_remote_network.list"
 if [ ! -f "/etc/storage/.vpnc_inited" ]; then
     cat << 'VPN_LIST_EOF' > "$VPNC_LIST"
-# Адрес быстрой проверки IP и вообще доступности тоннеля: https://checkip.dyndns.org/
+# Адрес проверки IP через тоннель: https://checkip.dyndns.org/
 193.122.6.168/32
 # Телеграм:
 104.21.37.127/32
