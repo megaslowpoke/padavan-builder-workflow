@@ -12,6 +12,8 @@ if [ "$CONFIG_FIRMWARE_INCLUDE_STUBBY" = "y" ] || \
    [ "$CONFIG_FIRMWARE_INCLUDE_OPENVPN" = "y" ] || \
    [ "$CONFIG_FIRMWARE_INCLUDE_CURL" = "y" ] || \
    [ "$CONFIG_FIRMWARE_INCLUDE_HTTPS" = "y" ] || \
+   [ "$CONFIG_FIRMWARE_INCLUDE_SFTP" = "y" ] || \
+   [ "$CONFIG_FIRMWARE_INCLUDE_EAP_PEAP" = "y" ] || \
    [ "$CONFIG_FIRMWARE_INCLUDE_DDNS_SSL" = "y" ] || \
    [ "$CONFIG_FIRMWARE_INCLUDE_SSWAN" = "y" ]; then
     (
