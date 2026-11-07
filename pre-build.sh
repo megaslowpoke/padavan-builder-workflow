@@ -1,46 +1,55 @@
 #!/bin/bash
 set -e
+# Подгружаем переменные из конфига сборки
+source build.config
 TRUNK="padavan-ng/trunk"
 OVER_TRUNK="overlay/trunk"
 WEB_DIR="padavan-ng/trunk/user/www/n56u_ribbon_fixed"
 
-# Обновляем корневые сертификаты с помощью родного скрипта
-(
-    cd "$TRUNK/libs/libssl" || exit 2
-    chmod +x ca-certificates_update.sh
-    ./ca-certificates_update.sh || exit 2
-)
+# Обновляем корневые сертификаты с помощью родного скрипта, если включен хотя бы один зависимый сервис
+if [ "$CONFIG_FIRMWARE_INCLUDE_STUBBY" = "y" ] || \
+   [ "$CONFIG_FIRMWARE_INCLUDE_DOH" = "y" ] || \
+   [ "$CONFIG_FIRMWARE_INCLUDE_OPENVPN" = "y" ] || \
+   [ "$CONFIG_FIRMWARE_INCLUDE_CURL" = "y" ] || \
+   [ "$CONFIG_FIRMWARE_INCLUDE_HTTPS" = "y" ] || \
+   [ "$CONFIG_FIRMWARE_INCLUDE_DDNS_SSL" = "y" ] || \
+   [ "$CONFIG_FIRMWARE_INCLUDE_SSWAN" = "y" ]; then
+    (
+        cd "$TRUNK/libs/libssl" || exit 2
+        chmod +x ca-certificates_update.sh
+        ./ca-certificates_update.sh || exit 2
+    )
+fi
 
-# Часовой пояс (MSK-3) Москва
-# sed -i 's/.*"time_zone".*/\t{ "time_zone", "UTC-3" },/' "$TRUNK/user/shared/defaults.c"
-# Минск
-# sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_1" },/' "$TRUNK/user/shared/defaults.c"
-# Багдад
-# sed -i 's/.*"time_zone".*/\t{ "time_zone", "IST-3IDT" },/' "$TRUNK/user/shared/defaults.c"
-# Найроби
-sed -i 's/.*"time_zone".*/\t{ "time_zone", "UCT-3_2" },/' "$TRUNK/user/shared/defaults.c"
+# Фикс сборки libgetdns (Stubby, DoT) при использовании OpenSSL 1.1.1w
+if [ "$CONFIG_FIRMWARE_INCLUDE_OPENSSL_11" = "y" ] && [ "$CONFIG_FIRMWARE_INCLUDE_STUBBY" = "y" ]; then
+    grep -rl "SSL_get1_peer_certificate" "$TRUNK/libs/libgetdns" | xargs -r sed -i 's/SSL_get1_peer_certificate/SSL_get_peer_certificate/g'
+fi
 
-# NTP-серверы
-# sed -i 's/.*"ntp_server0".*/\t{ "ntp_server0", "time100.stupi.se" },/' "$TRUNK/user/shared/defaults.c"
-# sed -i 's/.*"ntp_server1".*/\t{ "ntp_server1", "ntp1.vniiftri.ru" },/' "$TRUNK/user/shared/defaults.c"
-# sed -i 's/.*"ntp_server2".*/\t{ "ntp_server2", "time.esa.int" },/' "$TRUNK/user/shared/defaults.c"
-# sed -i 's/.*"ntp_server3".*/\t{ "ntp_server3", "ojab.ru" },/' "$TRUNK/user/shared/defaults.c"
-sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' "$TRUNK/user/shared/defaults.h"
-sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' "$TRUNK/user/shared/defaults.h"
-sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' "$TRUNK/user/shared/defaults.h"
-sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time.cloudflare.com"/' "$TRUNK/user/shared/defaults.h"
-# Дефолтные NTP при обновлении настроек в обход дот/дох
-sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' "$TRUNK/user/scripts/mtd_storage.sh"
+# Часовой пояс, по умолчанию стоит Киев
+TZ=UTC-3    # Москва
+# TZ=UCT-3_1  # Минск
+# TZ=IST-3IDT # Багдад
+# TZ=UCT-3_2  # Найроби
+sed -i "s/.*\"time_zone\".*/\t{ \"time_zone\", \"$TZ\" },/" "$TRUNK/user/shared/defaults.c"
 
 # Язык веб-интерфейса
 # sed -i 's/.*"web_ui_lang".*/\t{ "web_ui_lang", "RU" },/' "$TRUNK/user/shared/defaults.c"
 
-# SSH по умолчанию
-# sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
+# NTP-серверы
+# "time100.stupi.se", "ntp1.vniiftri.ru", "time.esa.int", "ojab.ru", "ntp.ix.ru", "ntp.msk-ix.ru", "ru.pool.ntp.org", "time.cloudflare.com"
+sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' "$TRUNK/user/shared/defaults.h"
+sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' "$TRUNK/user/shared/defaults.h"
+sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' "$TRUNK/user/shared/defaults.h"
+sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time100.stupi.se"/' "$TRUNK/user/shared/defaults.h"
+# Дефолтные NTP при обновлении настроек в обход дот/дох
+sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' "$TRUNK/user/scripts/mtd_storage.sh"
 
 # Логин и пароль от веб-интерфейса и SSH
 sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' "$TRUNK/user/shared/defaults.c"
 sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' "$TRUNK/user/shared/defaults.c"
+# SSH по умолчанию выключен
+# sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 
 # Сеть и Wi-Fi
 NEW_LAN="192.168.10"
@@ -84,7 +93,7 @@ sed -i 's/.*"dhcp_stop_dns_rebind".*/\t{ "dhcp_stop_dns_rebind", "1" },/' "$TRUN
 sed -i 's/.*"dhcp_proxy_dnssec".*/\t{ "dhcp_proxy_dnssec", "1" },/' "$TRUNK/user/shared/defaults.c"
 # ez_action_long, выключение ролтона по долгому нажатию на WPS
 sed -i 's/"ez_action_long", "0"/"ez_action_long", "8"/' "$TRUNK/user/shared/defaults.c"
-# DNS
+# Настройки DNS
 sed -i 's/"redirect_all_dns", "0"/"redirect_all_dns", "1"/' "$TRUNK/user/shared/defaults.c"
 sed -i 's/"dhcp_strict_order", "0"/"dhcp_strict_order", "1"/' "$TRUNK/user/shared/defaults.c"
 
@@ -95,7 +104,8 @@ sed -i 's/.*"rstats_stored".*/\t{ "rstats_stored", "0" },/' "$TRUNK/user/shared/
 sed -i 's/.*"stime_stored".*/\t{ "stime_stored", "1" },/' "$TRUNK/user/shared/defaults.c"
 
 # Комментируем дефолтные серверы в шаблоне Stubby и добавляем свои
-sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
+if [ "$CONFIG_FIRMWARE_INCLUDE_STUBBY" = "y" ]; then
+    sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
 ## Cloudflare\
 #  - address_data: 1.1.1.1\
 #    tls_auth_name: "cloudflare-dns.com"\
@@ -116,8 +126,9 @@ sed -i '/## Cloudflare/,/tls_auth_name: "dns.google"/c\
     tls_auth_name: "dot.sb"\
   - address_data: 185.222.222.222\
     tls_auth_name: "dot.sb"' "$TRUNK/user/stubby/stubby_proxy.sh"
+fi
 
-# Надо облегчить прошивку, всё равно не влезает в 4мб дир300
+# === Надо облегчить прошивку, не влезает в 4мб дир300 ===
 
 # Оставляем шапку и основные серверы в списке dnscrypt
 # sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
@@ -134,8 +145,6 @@ find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
 
 # Исключаем сборку infosvr/lanauth/ddns из общего Makefile
 sed -i '/\<infosvr\>/d; /\<lanauth\>/d; /\<inadyn\>/d' "$TRUNK/user/Makefile"
-# Исключаем ddns из rc/Makefile
-sed -i '/\<ddns_updated\; /\<start_ddns\>/d' "$TRUNK/user/rc/Makefile"
 # Убираем создание конфига inadyn.conf в /etc/storage при инициализации
 sed -i '/# create user inadyn\.conf/,/# create user hosts/{/# create user hosts/!d;}' "$TRUNK/user/scripts/mtd_storage.sh"
 # Убираем вкладку DDNS из меню WAN (state.js) и карты сети (internet.asp)
@@ -150,16 +159,16 @@ sed -i '/current_page\.value == "Advanced_DDNS_Content\.asp"/,/action_mode\.valu
 sed -i -E '/^(DDNS|LANHostConfig_x_DDNS([A-Za-z]|_alarm_([1-8]|1[0-4]|hostname|registered))|noDDNS=|neednotDDNS=|asusddns_inputhint=|menu5_3_6=)/d' "$TRUNK/user/www/dict"/*.{dict,footer}
 # И про диски
 sed -i -E '/^(AiDisk|File_Pop_content_alert_desc|File_content_alert_desc|ALERT_OF_ERROR_|HowToShareby|Storage[A-Z]|HSDPAConfig_|Modem|Printer|OVPN_)/d' "$TRUNK/user/www/dict"/*.{dict,footer}
-# Надо убрать 'ISP KABiNET' из выпадающего списка авторизации WAN
+# Убираем 'ISP KABiNET' из выпадающего списка авторизации WAN
 sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
-# Как-то так надо скрывать в asp блок с infosvr
+# Скрываем в asp блок с infosvr
 sed -i '/<tr>/{
   $!N
   /<tr>[[:space:]]*<th><#Adm_Svc_adsc#><\/th>/ s/<tr>/<tr style="display:none;">/
   P; D
 }' "$WEB_DIR/Advanced_Services_Content.asp"
 
-# --- Создаем скрипт финальной очистки romfs перед упаковкой в SquashFS ---
+# --- Скрипт финальной очистки romfs перед упаковкой в SquashFS ---
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
 EOF
@@ -194,7 +203,8 @@ EOF
 # DDNS
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 rm -rfv "$ROMFSDIR/www/Advanced_DDNS_Content.asp" \
-        "$ROMFSDIR/sbin/ddns_updated"
+        "$ROMFSDIR/sbin/ddns_updated" \
+        "$ROMFSDIR/sbin/start_ddns"
 EOF
 
 # Накатываем свои оптимизированные файлы (без скрытых файлов, иначе: '"$OVER_TRUNK"/. "$TRUNK/".')
