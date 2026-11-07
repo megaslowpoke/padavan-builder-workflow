@@ -4,6 +4,7 @@ set -e
 source build.config
 TRUNK="padavan-ng/trunk"
 OVER_TRUNK="overlay/trunk"
+OVER_NOUSB_TRUNK="overlay_NOUSB/trunk"
 WEB_DIR="padavan-ng/trunk/user/www/n56u_ribbon_fixed"
 
 # Обновляем корневые сертификаты с помощью родного скрипта, если включен хотя бы один зависимый сервис
@@ -213,7 +214,11 @@ EOF
 
 # Накатываем свои оптимизированные файлы (без скрытых файлов, иначе: '"$OVER_TRUNK"/. "$TRUNK/".')
 if [ -d "$OVER_TRUNK" ]; then
-    cp -rf "$OVER_TRUNK"/* "$TRUNK/"
+   if [ "$CONFIG_FIRMWARE_ENABLE_USB" = "y" ]; then
+      cp -rf "$OVER_TRUNK"/* "$TRUNK/"
+   else
+      cp -rf "$OVER_NOUSB_TRUNK"/* "$TRUNK/"
+   fi
 fi
 
 # --- Предзаполнение файла маршрутов VPN для новых роутеров ---
