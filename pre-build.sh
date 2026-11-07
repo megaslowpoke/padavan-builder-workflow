@@ -134,9 +134,9 @@ fi
 # sed -i -n '1p; /cisco\|cleanbrowsing\|quad9\|dnscrypt\.eu\|adguard/p' \
 # "$TRUNK/user/dnscrypt-proxy/dnscrypt-proxy-1.9.5/dnscrypt-resolvers.csv"
 
-# Очищаем веб-интерфейс (.asp, .js, .css) от начальных пробелов/табов, пустых строк и однострочных JS-комментариев
-find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.js" -o -name "*.css" \) \
-    ! -name "*.min.js" ! -name "*.min.css" \
+# Очищаем веб-интерфейс (asp/js/css/htm) от начальных пробелов/табов, пустых строк и однострочных JS-комментариев
+find "$WEB_DIR" -type f \( -name "*.asp" -o -name "*.htm" -o -name "*.js" -o -name "*.css" \) \
+    ! -name "*.min.css" \( ! -name "*.min.js" -o -name "engage.itoggle.min.js" \) \
     -exec sed -i \
         -e 's/^[[:space:]]*//' \
         -e '/^[[:space:]]*\/\//d' \
