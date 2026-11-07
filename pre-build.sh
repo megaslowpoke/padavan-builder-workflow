@@ -81,8 +81,6 @@ sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' "$TRUNK/user/sh
 
 # ZAPRET
 sed -i 's/.*"zapret_enable".*/\t{ "zapret_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
-# DNSCRYPT
-sed -i 's/.*"dnscrypt_enable".*/\t{ "dnscrypt_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 # VLMCSD
 sed -i 's/.*"vlmcsd_enable".*/\t{ "vlmcsd_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 # watchdog_cpu
@@ -91,12 +89,16 @@ sed -i 's/.*"watchdog_cpu".*/\t{ "watchdog_cpu", "1" },/' "$TRUNK/user/shared/de
 sed -i 's/.*"dhcp_stop_dns_rebind".*/\t{ "dhcp_stop_dns_rebind", "1" },/' "$TRUNK/user/shared/defaults.c"
 # dhcp_proxy_dnssec
 sed -i 's/.*"dhcp_proxy_dnssec".*/\t{ "dhcp_proxy_dnssec", "1" },/' "$TRUNK/user/shared/defaults.c"
-# ez_action_long, выключение ролтона по долгому нажатию на WPS
-sed -i 's/"ez_action_long", "0"/"ez_action_long", "8"/' "$TRUNK/user/shared/defaults.c"
+# lltd
+sed -i 's/.*"lltd_enable".*/\t{ "lltd_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
+# DNSCRYPT
+sed -i 's/.*"dnscrypt_enable".*/\t{ "dnscrypt_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 # Настройки DNS
-sed -i 's/"redirect_all_dns", "0"/"redirect_all_dns", "1"/' "$TRUNK/user/shared/defaults.c"
-sed -i 's/"dhcp_strict_order", "0"/"dhcp_strict_order", "1"/' "$TRUNK/user/shared/defaults.c"
-
+sed -i 's/.*"redirect_all_dns".*/\t{ "redirect_all_dns", "1" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/.*"dhcp_strict_order".*/\t{ "dhcp_strict_order", "1" },/' "$TRUNK/user/shared/defaults.c"
+sed -i 's/.*"dnscrypt_force_dns".*/\t{ "dnscrypt_force_dns", "1" },/' "$TRUNK/user/shared/defaults.c"
+# ez_action_long, выключение ролтона по долгому нажатию на WPS
+sed -i 's/.*"ez_action_long".*/\t{ "ez_action_long", "8" },/' "$TRUNK/user/shared/defaults.c"
 # Сохранение настроек
 sed -i 's/.*"nvram_manual".*/\t{ "nvram_manual", "1" },/' "$TRUNK/user/shared/defaults.c"
 sed -i 's/.*"rstats_enable".*/\t{ "rstats_enable", "0" },/' "$TRUNK/user/shared/defaults.c"
