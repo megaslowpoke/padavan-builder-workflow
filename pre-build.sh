@@ -45,13 +45,13 @@ sed -i 's/#define DEF_NTP_SERVER0.*/#define DEF_NTP_SERVER0 "ntp.ix.ru"/' "$TRUN
 sed -i 's/#define DEF_NTP_SERVER1.*/#define DEF_NTP_SERVER1 "ntp.msk-ix.ru"/' "$TRUNK/user/shared/defaults.h"
 sed -i 's/#define DEF_NTP_SERVER2.*/#define DEF_NTP_SERVER2 "ru.pool.ntp.org"/' "$TRUNK/user/shared/defaults.h"
 sed -i 's/#define DEF_NTP_SERVER3.*/#define DEF_NTP_SERVER3 "time100.stupi.se"/' "$TRUNK/user/shared/defaults.h"
-# Дефолтные NTP при обновлении настроек в обход дот/дох
+# замена дефолтных нтп при обновлении настроек в обход дот/дох/днскрипт
 sed -i 's|server=/ntp.org/time.cloudflare.com/time.google.com/time.in.ua/1.1.1.1|server=/ntp.ix.ru/ntp.msk-ix.ru/ru.pool.ntp.org/time.cloudflare.com/time100.stupi.se/ntp1.vniiftri.ru/ojab.ru/time.esa.int/185.228.168.9|' "$TRUNK/user/scripts/mtd_storage.sh"
 
 # Логин и пароль от веб-интерфейса и SSH
 sed -i 's/.*"http_username".*/\t{ "http_username", "admin" },/' "$TRUNK/user/shared/defaults.c"
 sed -i 's/.*"http_passwd".*/\t{ "http_passwd", "" },/' "$TRUNK/user/shared/defaults.c"
-# SSH по умолчанию выключен
+# SSH по умолчанию
 # sed -i 's/.*"sshd_enable".*/\t{ "sshd_enable", "1" },/' "$TRUNK/user/shared/defaults.c"
 
 # Сеть и Wi-Fi
