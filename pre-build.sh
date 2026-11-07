@@ -82,6 +82,10 @@ sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' "$TRUNK/user/shared/defaults
 sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' "$TRUNK/user/shared/defaults.c"
 sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' "$TRUNK/user/shared/defaults.c"
 
+# Obtaining DNS from VPN Server: Add to existing list
+sed -i 's/.*"vpnc_pdns".*/\t{ "vpnc_pdns", "1" },/' "$TRUNK/user/shared/defaults.c"
+# Restrict Access from VPN Server Site: Yes, but follow Firewall & Port Forwarding rules
+sed -i 's/.*"vpnc_sfw".*/\t{ "vpnc_sfw", "3" },/' "$TRUNK/user/shared/defaults.c"
 # WebUI syslog float panel mode - Last 100 lines
 sed -i 's/.*"log_float_ui".*/\t{ "log_float_ui", "2" },/' "$TRUNK/user/shared/defaults.c"
 # Software Offload TCP/UDP for LAN/WLAN
