@@ -82,6 +82,8 @@ sed -i 's/.*"wl_closed".*/\t{ "wl_closed", "1" },/' "$TRUNK/user/shared/defaults
 sed -i 's/.*"rt_country_code".*/\t{ "rt_country_code", "RU" },/' "$TRUNK/user/shared/defaults.c"
 sed -i 's/.*"wl_country_code".*/\t{ "wl_country_code", "RU" },/' "$TRUNK/user/shared/defaults.c"
 
+# WebUI syslog float panel mode - Last 100 lines
+sed -i 's/.*"log_float_ui".*/\t{ "log_float_ui", "2" },/' "$TRUNK/user/shared/defaults.c"
 # Software Offload TCP/UDP for LAN/WLAN
 sed -i 's/.*"sfe_enable".*/\t{ "sfe_enable", "2" },/' "$TRUNK/user/shared/defaults.c"
 # ZAPRET
