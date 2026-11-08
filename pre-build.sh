@@ -281,7 +281,7 @@ rm -rfv "$ROMFSDIR/www/Advanced_DDNS_Content.asp" \
         "$ROMFSDIR/sbin/start_ddns"
 EOF
 
-# Накатываем свои оптимизированные файлы (без скрытых файлов, иначе: '"$OVER_TRUNK"/. "$TRUNK/".')
+# Накатываем свои оптимизированные файлы (со скрытыми файлами: '"$OVER_TRUNK"/.')
 if [ -d "$OVER_TRUNK" ]; then
    if [ "$CONFIG_FIRMWARE_ENABLE_USB" = "y" ]; then
       cp -rf "$OVER_TRUNK"/* "$TRUNK/"
