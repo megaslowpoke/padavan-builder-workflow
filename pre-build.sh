@@ -144,6 +144,10 @@ fi
 
 # Автосмена UDP-порта wg0 (AmneziaWG / WireGuard) через vpnc_server_script.sh
 if [ "$CONFIG_FIRMWARE_INCLUDE_AMNEZIAWG" = "y" ] || [ "$CONFIG_FIRMWARE_INCLUDE_WIREGUARD" = "y" ]; then
+    # Включаем вывод в syslog ошибки таймаута хендшейка для обычного WireGuard
+    grep -rl "Handshake for peer .* did not complete" "$TRUNK/linux-3.4.x/net/wireguard" 2>/dev/null | \
+        xargs -r sed -i '/Handshake for peer .* did not complete/s/net_dbg_ratelimited/net_info_ratelimited/'
+
     if ! grep -q 'chmod 755 "\$script_vpncs"' "$TRUNK_USER/scripts/mtd_storage.sh"; then
         echo "ERROR: chmod 755 \$script_vpncs not found in mtd_storage.sh" >&2
         exit 2
@@ -161,14 +165,28 @@ PATTERN="(amneziawg|wireguard): wg0: Handshake .* did not complete"\
 LAST_ERR=$(grep -E "$PATTERN" /tmp/syslog.log 2>/dev/null | tail -n 1)\
 while sleep 15; do\
     [ -d /sys/class/net/wg0 ] || exit 0\
+    if [ -d /sys/module/amneziawg ]; then\
+        WG=awg\
+    else\
+        WG=wg\
+    fi\
+    ROTATE=0\
     ERR=$(grep -E "$PATTERN" /tmp/syslog.log 2>/dev/null | tail -n 1)\
     if [ -n "$ERR" ] \&\& [ "$ERR" != "$LAST_ERR" ]; then\
+        ROTATE=1\
+    else\
+        NOW=$(date +%s)\
+        LAST_HS=$($WG show wg0 latest-handshakes 2>/dev/null | awk '\''{print $2}'\'')\
+        if [ -n "$LAST_HS" ] \&\& [ "$NOW" -gt 1700000000 ]; then\
+            if [ "$LAST_HS" -eq 0 ] || [ $((NOW - LAST_HS)) -gt 150 ]; then\
+                ROTATE=1\
+            fi\
+        fi\
+    fi\
+    if [ "$ROTATE" -eq 1 ]; then\
         logger -t wg_watchdog "Handshake timeout detected, rotating wg0 UDP port"\
-        case "$ERR" in\
-            *amneziawg:*) awg set wg0 listen-port 0 ;;\
-            *wireguard:*) wg set wg0 listen-port 0 ;;\
-        esac\
-        sleep 6\
+        $WG set wg0 listen-port 0\
+        sleep 20\
         ERR=$(grep -E "$PATTERN" /tmp/syslog.log 2>/dev/null | tail -n 1)\
     fi\
     LAST_ERR="$ERR"\
