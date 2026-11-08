@@ -143,7 +143,7 @@ fi
 
 # Автосмена UDP-порта wg0 (AmneziaWG / WireGuard) через vpnc_server_script.sh
 if [ "$CONFIG_FIRMWARE_INCLUDE_AMNEZIAWG" = "y" ] || [ "$CONFIG_FIRMWARE_INCLUDE_WIREGUARD" = "y" ]; then
-    grep -q 'chmod 755 "\$script_vpnc"' "$TRUNK_USER/scripts/mtd_storage.sh" || exit 2
+    grep -q 'chmod 755 "\$script_vpnc"' "$TRUNK/user/scripts/mtd_storage.sh" || exit 2
     sed -i '/chmod 755 "\$script_vpnc"/i \
 \t\tcat >> "$script_vpnc" << '\''WG_EOF'\''\
 \
@@ -178,7 +178,7 @@ WD_EOF\
     ;;\
   esac\
 fi\
-WG_EOF' "$TRUNK_USER/scripts/mtd_storage.sh"
+WG_EOF' "$TRUNK/user/scripts/mtd_storage.sh"
 fi
 
 # === Надо облегчить прошивку, не влезает в 4мб дир300 ===
