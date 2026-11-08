@@ -141,6 +141,46 @@ if [ "$CONFIG_FIRMWARE_INCLUDE_STUBBY" = "y" ]; then
     tls_auth_name: "dot.sb"' "$TRUNK/user/stubby/stubby_proxy.sh"
 fi
 
+# Автосмена UDP-порта wg0 (AmneziaWG / WireGuard) через vpnc_server_script.sh
+if [ "$CONFIG_FIRMWARE_INCLUDE_AMNEZIAWG" = "y" ] || [ "$CONFIG_FIRMWARE_INCLUDE_WIREGUARD" = "y" ]; then
+    grep -q 'chmod 755 "\$script_vpnc"' "$TRUNK_USER/scripts/mtd_storage.sh" || exit 2
+    sed -i '/chmod 755 "\$script_vpnc"/i \
+\t\tcat >> "$script_vpnc" << '\''WG_EOF'\''\
+\
+if [ "$IFNAME" = "wg0" ]; then\
+  case "$1" in\
+  up|start)\
+    killall -q wg_watchdog.sh\
+    cat << '\''WD_EOF'\'' > /tmp/wg_watchdog.sh\
+#!/bin/sh\
+PATTERN="(amneziawg|wireguard): wg0: Handshake .* did not complete"\
+LAST_ERR=$(grep -E "$PATTERN" /tmp/syslog.log 2>/dev/null | tail -n 1)\
+while sleep 15; do\
+    [ -d /sys/class/net/wg0 ] || exit 0\
+    ERR=$(grep -E "$PATTERN" /tmp/syslog.log 2>/dev/null | tail -n 1)\
+    if [ -n "$ERR" ] \&\& [ "$ERR" != "$LAST_ERR" ]; then\
+        logger -t wg_watchdog "Handshake timeout detected, rotating wg0 UDP port"\
+        case "$ERR" in\
+            *amneziawg:*) awg set wg0 listen-port 0 ;;\
+            *wireguard:*) wg set wg0 listen-port 0 ;;\
+        esac\
+        sleep 6\
+        ERR=$(grep -E "$PATTERN" /tmp/syslog.log 2>/dev/null | tail -n 1)\
+    fi\
+    LAST_ERR="$ERR"\
+done\
+WD_EOF\
+    chmod +x /tmp/wg_watchdog.sh\
+    /tmp/wg_watchdog.sh \&\
+    ;;\
+  down|stop)\
+    killall -q wg_watchdog.sh\
+    ;;\
+  esac\
+fi\
+WG_EOF' "$TRUNK_USER/scripts/mtd_storage.sh"
+fi
+
 # === Надо облегчить прошивку, не влезает в 4мб дир300 ===
 
 # Оставляем шапку и основные серверы в списке dnscrypt
