@@ -28,7 +28,9 @@ jobs:
         git config --global --add safe.directory '*'
         git clone -b "$PADAVAN_BRANCH" "$PADAVAN_REPO"
         git -C padavan-ng checkout "$PADAVAN_COMMIT"
-        wget -qO- "$PADAVAN_TOOLCHAIN_URL" | tar -C padavan-ng --zstd -xf -
+        wget -nv -c --tries=5 --waitretry=5 -O /tmp/toolchain.tzst "$PADAVAN_TOOLCHAIN_URL"
+        tar -C padavan-ng --zstd -xf /tmp/toolchain.tzst
+        rm -f /tmp/toolchain.tzst
 
     - name: Install themes
       run: |
