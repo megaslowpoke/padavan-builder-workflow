@@ -233,7 +233,7 @@ sed -i '/current_page\.value == "Advanced_DDNS_Content\.asp"/,/action_mode\.valu
 # Убираем из словарей почти всё про DDNS
 sed -i -E '/^(DDNS|LANHostConfig_x_DDNS([A-Za-z]|_alarm_([1-8]|1[0-4]|hostname|registered))|noDDNS=|neednotDDNS=|asusddns_inputhint=|menu5_3_6=)/d' "$TRUNK/user/www/dict"/*.{dict,footer}
 # Удаляем из словарей неиспользуемые блоки USB-дисков, FTP/Samba-шар, модемов и принтеров
-sed -i -E '/^(AiDisk|File_Pop_content_alert_desc|File_content_alert_desc|ALERT_OF_ERROR_|HowToShareby|Storage[A-Z]|enableFTP|FTPS_|enableCIFS=|enable_noaccount_alert=|SambaClose=|FTPClose=|(Add|Del|Mod)(Account|Folder)|Step[1-3]_|linktodisk|linktoFTP_no_|Safelyremove|DiskStatus_refresh|UPnPMediaServer|ShareNode_(FTPLANG|Seeding|MaxUpload|MaximumLoginUser|InitialScript)|HSDPAConfig_|GO_HSDPA_SETTING=|Modem|Printer)/d' "$TRUNK_USER/www/dict"/*.dict
+sed -i -E '/^(AiDisk|File_Pop_content_alert_desc|File_content_alert_desc|ALERT_OF_ERROR_|HowToShareby|Storage[A-Z]|enableFTP|FTPS_|enableCIFS=|enable_noaccount_alert=|SambaClose=|FTPClose=|(Add|Del|Mod)(Account|Folder)|Step[1-3]_|linktodisk|linktoFTP_no_|Safelyremove|DiskStatus_refresh|UPnPMediaServer|ShareNode_(FTPLANG|Seeding|MaxUpload|MaximumLoginUser|InitialScript)|HSDPAConfig_|GO_HSDPA_SETTING=|Modem|Printer)/d' "$TRUNK/user/www/dict"/*.{dict,footer}
 # Убираем 'ISP KABiNET' из выпадающего списка авторизации WAN
 sed -i '/value="1".*ISP KABiNET/d' "$WEB_DIR/Advanced_WAN_Content.asp"
 # Скрываем в asp блок с infosvr
