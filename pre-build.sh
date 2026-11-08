@@ -3,6 +3,7 @@ set -e
 # Подгружаем переменные из конфига сборки
 source build.config
 TRUNK="padavan-ng/trunk"
+TRUNK_USER="padavan-ng/trunk/user"
 OVER_TRUNK="overlay/trunk"
 OVER_NOUSB_TRUNK="overlay_NOUSB/trunk"
 WEB_DIR="padavan-ng/trunk/user/www/n56u_ribbon_fixed"
@@ -143,9 +144,12 @@ fi
 
 # Автосмена UDP-порта wg0 (AmneziaWG / WireGuard) через vpnc_server_script.sh
 if [ "$CONFIG_FIRMWARE_INCLUDE_AMNEZIAWG" = "y" ] || [ "$CONFIG_FIRMWARE_INCLUDE_WIREGUARD" = "y" ]; then
-    grep -q 'chmod 755 "\$script_vpnc"' "$TRUNK/user/scripts/mtd_storage.sh" || exit 2
-    sed -i '/chmod 755 "\$script_vpnc"/i \
-\t\tcat >> "$script_vpnc" << '\''WG_EOF'\''\
+    if ! grep -q 'chmod 755 "\$script_vpncs"' "$TRUNK_USER/scripts/mtd_storage.sh"; then
+        echo "ERROR: chmod 755 \$script_vpncs not found in mtd_storage.sh" >&2
+        exit 2
+    fi
+    sed -i '/chmod 755 "\$script_vpncs"/i \
+\t\tcat >> "$script_vpncs" << '\''WG_EOF'\''\
 \
 if [ "$IFNAME" = "wg0" ]; then\
   case "$1" in\
@@ -178,7 +182,7 @@ WD_EOF\
     ;;\
   esac\
 fi\
-WG_EOF' "$TRUNK/user/scripts/mtd_storage.sh"
+WG_EOF' "$TRUNK_USER/scripts/mtd_storage.sh"
 fi
 
 # === Надо облегчить прошивку, не влезает в 4мб дир300 ===
