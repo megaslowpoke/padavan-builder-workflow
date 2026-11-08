@@ -3,7 +3,6 @@ set -e
 # Подгружаем переменные из конфига сборки
 source build.config
 TRUNK="padavan-ng/trunk"
-TRUNK_USER="padavan-ng/trunk/user"
 OVER_TRUNK="overlay/trunk"
 OVER_NOUSB_TRUNK="overlay_NOUSB/trunk"
 WEB_DIR="padavan-ng/trunk/user/www/n56u_ribbon_fixed"
@@ -148,7 +147,7 @@ if [ "$CONFIG_FIRMWARE_INCLUDE_AMNEZIAWG" = "y" ] || [ "$CONFIG_FIRMWARE_INCLUDE
     grep -rl "Handshake for peer .* did not complete" "$TRUNK/linux-3.4.x/net/wireguard" 2>/dev/null | \
         xargs -r sed -i '/Handshake for peer .* did not complete/s/net_dbg_ratelimited/net_info_ratelimited/'
 
-    if ! grep -q 'chmod 755 "\$script_vpncs"' "$TRUNK_USER/scripts/mtd_storage.sh"; then
+    if ! grep -q 'chmod 755 "\$script_vpncs"' "$TRUNK/user/scripts/mtd_storage.sh"; then
         echo "ERROR: chmod 755 \$script_vpncs not found in mtd_storage.sh" >&2
         exit 2
     fi
@@ -200,7 +199,7 @@ WD_EOF\
     ;;\
   esac\
 fi\
-WG_EOF' "$TRUNK_USER/scripts/mtd_storage.sh"
+WG_EOF' "$TRUNK/user/scripts/mtd_storage.sh"
 fi
 
 # === Надо облегчить прошивку, не влезает в 4мб дир300 ===
@@ -282,7 +281,7 @@ rm -rfv "$ROMFSDIR/www/Advanced_DDNS_Content.asp" \
         "$ROMFSDIR/sbin/start_ddns"
 EOF
 
-# Накатываем свои оптимизированные файлы (без скрытых файлов, иначе: '"$OVER_TRUNK"/. "$TRUNK/".')
+# Накатываем свои оптимизированные файлы (со скрытыми файлами: '"$OVER_TRUNK"/.')
 if [ -d "$OVER_TRUNK" ]; then
    if [ "$CONFIG_FIRMWARE_ENABLE_USB" = "y" ]; then
       cp -rf "$OVER_TRUNK"/* "$TRUNK/"
