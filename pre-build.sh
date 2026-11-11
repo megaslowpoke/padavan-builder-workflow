@@ -288,17 +288,6 @@ sed -i '/<tr>/{
   P; D
 }' "$WEB_DIR/Advanced_Services_Content.asp"
 
-# Удаляем wpa_supplicant (нужен только для проводного 802.1X EAP на WAN, Wi-Fi работает через rt2860v2_ap.ko)
-rm -f "$ROMFS/usr/sbin/wpa_supplicant" "$ROMFS/usr/sbin/wpa_cli"
-
-# Удаляем неиспользуемые типы таблиц ipset (оставляем hash:ip, hash:net, hash:ip,port и list:set)
-find "$ROMFS/lib/modules" -name "ip_set_*.ko" \
-    ! -name "ip_set_hash_ip.ko" \
-    ! -name "ip_set_hash_net.ko" \
-    ! -name "ip_set_hash_ipport.ko" \
-    ! -name "ip_set_list_set.ko" \
-    -delete
-
 # --- Скрипт финальной очистки romfs перед упаковкой в SquashFS ---
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
@@ -378,35 +367,35 @@ if [ -f "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv" ]; then
 fi
 EOF
 
-# PPTP и L2TP (клиент PPPoE остается)
-cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-rm -rfv "$ROMFSDIR/usr/sbin/pptpd" \
-        "$ROMFSDIR/usr/sbin/pptpctrl" \
-        "$ROMFSDIR/usr/sbin/bcrelay" \
-        "$ROMFSDIR/usr/sbin/xl2tpd" \
-        "$ROMFSDIR/usr/lib/pppd/pppol2tp.so" \
-        "$ROMFSDIR/usr/lib/pppd/pptp.so" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_pptp.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_proto_gre.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_pptp.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_proto_gre.ko"
-EOF
-# IPTV multicast (udpxy и igmpproxy)
-cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-rm -rfv "$ROMFSDIR/usr/sbin/udpxy" \
-        "$ROMFSDIR/bin/igmpproxy"
-EOF
-# NAT ALG (старые хелперы H.323, SIP, RTSP и FTP)
-cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-rm -rfv "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_ftp.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_h323.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_rtsp.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_sip.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_ftp.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_h323.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_rtsp.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_sip.ko"
-EOF
+# # PPTP и L2TP (клиент PPPoE остается)
+# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+# rm -rfv "$ROMFSDIR/usr/sbin/pptpd" \
+#         "$ROMFSDIR/usr/sbin/pptpctrl" \
+#         "$ROMFSDIR/usr/sbin/bcrelay" \
+#         "$ROMFSDIR/usr/sbin/xl2tpd" \
+#         "$ROMFSDIR/usr/lib/pppd/pppol2tp.so" \
+#         "$ROMFSDIR/usr/lib/pppd/pptp.so" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_pptp.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_proto_gre.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_pptp.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_proto_gre.ko"
+# EOF
+# # IPTV multicast (udpxy и igmpproxy)
+# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+# rm -rfv "$ROMFSDIR/usr/sbin/udpxy" \
+#         "$ROMFSDIR/bin/igmpproxy"
+# EOF
+# # NAT ALG (старые хелперы H.323, SIP, RTSP и FTP)
+# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+# rm -rfv "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_ftp.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_h323.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_rtsp.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_sip.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_ftp.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_h323.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_rtsp.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_sip.ko"
+# EOF
 
 # Накатываем свои оптимизированные файлы (со скрытыми файлами: '"$OVER_TRUNK"/.')
 if [ -d "$OVER_TRUNK" ]; then
