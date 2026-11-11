@@ -44,9 +44,9 @@ https://github.com/megaslowpoke/padavan-builder-workflow/blob/main/.github/workf
 	Тут чуть исправлено скачивание тулчейна, но это неважно когда гитхаб/гитлаб работают нормально.
 https://github.com/megaslowpoke/padavan-builder-workflow/blob/main/variables
 	В variables видно, что репа с тулчейном используется из гитхаба, это потому что гитлаб постоянно банил меня по Rate limit exceeded, что очень мешает при экспериментах, поэтому пришлось скопировать к себе, всем так делать незачем.
-https://github.com/megaslowpoke/padavan-builder-workflow/blob/main/build_DIR300.config
+https://github.com/megaslowpoke/padavan-builder-workflow/blob/main/DIR300_build.config
 	Оставлен минимум описаный выше.
-https://github.com/megaslowpoke/padavan-builder-workflow/blob/main/pre-build_DIR300.sh
+https://github.com/megaslowpoke/padavan-builder-workflow/blob/main/DIR300_pre-build.sh
 	Коментарии есть, вроде можно разобраться, и кажется не должно быть проблем поправить под себя. Линупсоид из меня так себе, и делалось всё без системы - что вижу то и пою, поэтому наверняка есть чего улучшить. 
 
 Ограмадное спасибо Sergey Hadzhioglu, кто может - пожалуйста киньтесь в него деньгами, чел же реально полезным делом занят: https://gitlab.com/hadzhioglu/padavan-ng
