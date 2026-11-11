@@ -141,6 +141,52 @@ if [ "$CONFIG_FIRMWARE_INCLUDE_STUBBY" = "y" ]; then
     tls_auth_name: "dot.sb"' "$TRUNK/user/stubby/stubby_proxy.sh"
 fi
 
+# --- Предзаполнение файла маршрутов VPN для новых роутеров ---
+cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
+
+# Заполняем список сетей VPN при первой загрузке роутера
+VPNC_LIST="/etc/storage/vpnc_remote_network.list"
+if [ ! -f "/etc/storage/.vpnc_inited" ]; then
+    cat << 'VPN_LIST_EOF' > "$VPNC_LIST"
+# Адрес проверки IP через тоннель: https://ifconfig.me/ или только IP: https://ifconfig.me/ip
+34.160.111.145/32
+# Телеграм:
+VPN_EOF
+
+# Пытаемся скачать актуальный список сетей Telegram напрямую в файл autostart.sh
+echo "Скачиваем актуальный список CIDR Telegram..."
+if ! curl -sSfL "https://core.telegram.org/resources/cidr.txt" >> "$TRUNK/user/scripts/autostart.sh"; then
+    echo "Ошибка скачивания. Используем резервный список."
+    cat << 'FALLBACK_EOF' >> "$TRUNK/user/scripts/autostart.sh"
+5.28.192.0/21
+5.28.248.0/21
+91.105.192.0/23
+91.108.4.0/22
+91.108.8.0/21
+91.108.16.0/21
+91.108.36.0/22
+91.108.56.0/22
+95.161.64.0/20
+149.154.160.0/20
+185.76.151.0/24
+2001:b28:f23d::/48
+2001:b28:f23f::/48
+2001:67c:4e8::/48
+2001:b28:f23c::/48
+2a0a:f280::/32
+FALLBACK_EOF
+else
+    echo "" >> "$TRUNK/user/scripts/autostart.sh" # Добавляем перенос строки на всякий случай
+fi
+
+# Дописываем закрывающую часть скрипта
+cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
+VPN_LIST_EOF
+    touch "/etc/storage/.vpnc_inited"
+    mtd_storage.sh save >/dev/null 2>&1
+fi
+VPN_EOF
+
 # Автосмена UDP-порта wg0 (AmneziaWG / WireGuard) через vpnc_server_script.sh
 if [ "$CONFIG_FIRMWARE_INCLUDE_AMNEZIAWG" = "y" ] || [ "$CONFIG_FIRMWARE_INCLUDE_WIREGUARD" = "y" ]; then
     # Включаем вывод в syslog ошибки таймаута хендшейка для обычного WireGuard
@@ -242,6 +288,17 @@ sed -i '/<tr>/{
   P; D
 }' "$WEB_DIR/Advanced_Services_Content.asp"
 
+# Удаляем wpa_supplicant (нужен только для проводного 802.1X EAP на WAN, Wi-Fi работает через rt2860v2_ap.ko)
+rm -f "$ROMFS/usr/sbin/wpa_supplicant" "$ROMFS/usr/sbin/wpa_cli"
+
+# Удаляем неиспользуемые типы таблиц ipset (оставляем hash:ip, hash:net, hash:ip,port и list:set)
+find "$ROMFS/lib/modules" -name "ip_set_*.ko" \
+    ! -name "ip_set_hash_ip.ko" \
+    ! -name "ip_set_hash_net.ko" \
+    ! -name "ip_set_hash_ipport.ko" \
+    ! -name "ip_set_list_set.ko" \
+    -delete
+
 # --- Скрипт финальной очистки romfs перед упаковкой в SquashFS ---
 cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
 echo "=== [CUSTOM CLEAN] Cleaning extra files in $ROMFSDIR ==="
@@ -281,6 +338,76 @@ rm -rfv "$ROMFSDIR/www/Advanced_DDNS_Content.asp" \
         "$ROMFSDIR/sbin/start_ddns"
 EOF
 
+# wpa_supplicant (проводной 802.1X EAP на WAN, для Wi-Fi не используется)
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+rm -rfv "$ROMFSDIR/usr/sbin/wpa_supplicant" \
+        "$ROMFSDIR/usr/sbin/wpa_cli"
+EOF
+# ipset (удаляем 12 редких модулей, оставляя базовые hash_ip, hash_net, hash_ipport и list_set)
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+rm -rfv "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_ip.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_ipmac.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_port.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipmac.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipmark.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipportip.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipportnet.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_mac.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netiface.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netnet.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netport.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netportnet.ko"
+EOF
+# lld2d и неиспользуемые утилиты отладки
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+rm -rfv "$ROMFSDIR/bin/lld2d" \
+        "$ROMFSDIR/etc_ro/lld2d.conf" \
+        "$ROMFSDIR/bin/ldd" \
+        "$ROMFSDIR/usr/bin/pppoe-discovery"
+EOF
+# очистка комментариев в services и protocols
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+sed -i '/^#/d; /^$/d; s/[[:space:]]*#.*//' "$ROMFSDIR/etc_ro/services" "$ROMFSDIR/etc_ro/protocols"
+EOF
+# очистка текстовых описаний в dnscrypt-resolvers.csv
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+if [ -f "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv" ]; then
+    awk -F',' 'BEGIN {OFS=","} NR==1 {print; next} /^[^",]+,/ { $2=""; $3=""; $4=""; $5=""; $6=""; print }' \
+        "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv" > /tmp/resolvers.csv && \
+        mv /tmp/resolvers.csv "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv"
+fi
+EOF
+
+# PPTP и L2TP (клиент PPPoE остается)
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+rm -rfv "$ROMFSDIR/usr/sbin/pptpd" \
+        "$ROMFSDIR/usr/sbin/pptpctrl" \
+        "$ROMFSDIR/usr/sbin/bcrelay" \
+        "$ROMFSDIR/usr/sbin/xl2tpd" \
+        "$ROMFSDIR/usr/lib/pppd/pppol2tp.so" \
+        "$ROMFSDIR/usr/lib/pppd/pptp.so" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_pptp.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_proto_gre.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_pptp.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_proto_gre.ko"
+EOF
+# IPTV multicast (udpxy и igmpproxy)
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+rm -rfv "$ROMFSDIR/usr/sbin/udpxy" \
+        "$ROMFSDIR/bin/igmpproxy"
+EOF
+# NAT ALG (старые хелперы H.323, SIP, RTSP и FTP)
+cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+rm -rfv "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_ftp.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_h323.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_rtsp.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/ipv4/netfilter/nf_nat_sip.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_ftp.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_h323.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_rtsp.ko" \
+        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/nf_conntrack_sip.ko"
+EOF
+
 # Накатываем свои оптимизированные файлы (со скрытыми файлами: '"$OVER_TRUNK"/.')
 if [ -d "$OVER_TRUNK" ]; then
    if [ "$CONFIG_FIRMWARE_ENABLE_USB" = "y" ]; then
@@ -290,48 +417,3 @@ if [ -d "$OVER_TRUNK" ]; then
    fi
 fi
 
-# --- Предзаполнение файла маршрутов VPN для новых роутеров ---
-cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
-
-# Заполняем список сетей VPN при первой загрузке роутера
-VPNC_LIST="/etc/storage/vpnc_remote_network.list"
-if [ ! -f "/etc/storage/.vpnc_inited" ]; then
-    cat << 'VPN_LIST_EOF' > "$VPNC_LIST"
-# Адрес проверки IP через тоннель: https://ifconfig.me/ или только IP: https://ifconfig.me/ip
-34.160.111.145/32
-# Телеграм:
-VPN_EOF
-
-# Пытаемся скачать актуальный список сетей Telegram напрямую в файл autostart.sh
-echo "Скачиваем актуальный список CIDR Telegram..."
-if ! curl -sSfL "https://core.telegram.org/resources/cidr.txt" >> "$TRUNK/user/scripts/autostart.sh"; then
-    echo "Ошибка скачивания. Используем резервный список."
-    cat << 'FALLBACK_EOF' >> "$TRUNK/user/scripts/autostart.sh"
-5.28.192.0/21
-5.28.248.0/21
-91.105.192.0/23
-91.108.4.0/22
-91.108.8.0/21
-91.108.16.0/21
-91.108.36.0/22
-91.108.56.0/22
-95.161.64.0/20
-149.154.160.0/20
-185.76.151.0/24
-2001:b28:f23d::/48
-2001:b28:f23f::/48
-2001:67c:4e8::/48
-2001:b28:f23c::/48
-2a0a:f280::/32
-FALLBACK_EOF
-else
-    echo "" >> "$TRUNK/user/scripts/autostart.sh" # Добавляем перенос строки на всякий случай
-fi
-
-# Дописываем закрывающую часть скрипта
-cat << 'VPN_EOF' >> "$TRUNK/user/scripts/autostart.sh"
-VPN_LIST_EOF
-    touch "/etc/storage/.vpnc_inited"
-    mtd_storage.sh save >/dev/null 2>&1
-fi
-VPN_EOF
