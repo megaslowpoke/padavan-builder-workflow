@@ -327,45 +327,45 @@ rm -rfv "$ROMFSDIR/www/Advanced_DDNS_Content.asp" \
         "$ROMFSDIR/sbin/start_ddns"
 EOF
 
-# wpa_supplicant (проводной 802.1X EAP на WAN, для Wi-Fi не используется)
-cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-rm -rfv "$ROMFSDIR/usr/sbin/wpa_supplicant" \
-        "$ROMFSDIR/usr/sbin/wpa_cli"
-EOF
-# ipset (удаляем 12 редких модулей, оставляя базовые hash_ip, hash_net, hash_ipport и list_set)
-cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-rm -rfv "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_ip.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_ipmac.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_port.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipmac.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipmark.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipportip.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipportnet.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_mac.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netiface.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netnet.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netport.ko" \
-        "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netportnet.ko"
-EOF
-# lld2d и неиспользуемые утилиты отладки
-cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-rm -rfv "$ROMFSDIR/bin/lld2d" \
-        "$ROMFSDIR/etc_ro/lld2d.conf" \
-        "$ROMFSDIR/bin/ldd" \
-        "$ROMFSDIR/usr/bin/pppoe-discovery"
-EOF
-# очистка комментариев в services и protocols
-cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-sed -i '/^#/d; /^$/d; s/[[:space:]]*#.*//' "$ROMFSDIR/etc_ro/services" "$ROMFSDIR/etc_ro/protocols"
-EOF
-# очистка текстовых описаний в dnscrypt-resolvers.csv
-cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
-if [ -f "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv" ]; then
-    awk -F',' 'BEGIN {OFS=","} NR==1 {print; next} /^[^",]+,/ { $2=""; $3=""; $4=""; $5=""; $6=""; print }' \
-        "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv" > /tmp/resolvers.csv && \
-        mv /tmp/resolvers.csv "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv"
-fi
-EOF
+# # wpa_supplicant (проводной 802.1X EAP на WAN, для Wi-Fi не используется)
+# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+# rm -rfv "$ROMFSDIR/usr/sbin/wpa_supplicant" \
+#         "$ROMFSDIR/usr/sbin/wpa_cli"
+# EOF
+# # ipset (удаляем 12 редких модулей, оставляя базовые hash_ip, hash_net, hash_ipport и list_set)
+# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+# rm -rfv "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_ip.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_ipmac.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_bitmap_port.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipmac.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipmark.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipportip.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_ipportnet.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_mac.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netiface.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netnet.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netport.ko" \
+#         "$ROMFSDIR/lib/modules/3.4.113/kernel/net/netfilter/ipset/ip_set_hash_netportnet.ko"
+# EOF
+# # lld2d и неиспользуемые утилиты отладки
+# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+# rm -rfv "$ROMFSDIR/bin/lld2d" \
+#         "$ROMFSDIR/etc_ro/lld2d.conf" \
+#         "$ROMFSDIR/bin/ldd" \
+#         "$ROMFSDIR/usr/bin/pppoe-discovery"
+# EOF
+# # очистка комментариев в services и protocols
+# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+# sed -i '/^#/d; /^$/d; s/[[:space:]]*#.*//' "$ROMFSDIR/etc_ro/services" "$ROMFSDIR/etc_ro/protocols"
+# EOF
+# # очистка текстовых описаний в dnscrypt-resolvers.csv
+# cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
+# if [ -f "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv" ]; then
+#     awk -F',' 'BEGIN {OFS=","} NR==1 {print; next} /^[^",]+,/ { $2=""; $3=""; $4=""; $5=""; $6=""; print }' \
+#         "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv" > /tmp/resolvers.csv && \
+#         mv /tmp/resolvers.csv "$ROMFSDIR/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv"
+# fi
+# EOF
 
 # # PPTP и L2TP (клиент PPPoE остается)
 # cat << 'EOF' >> "$TRUNK/tools/strip-romfs.sh"
